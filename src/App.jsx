@@ -1,10 +1,10 @@
-import Hero from "./landingPage/Hero";
-import ProblemSection from "./landingPage/ProblemSection";
-import SolutionSection from "./landingPage/Solutionsection";
-import Howitworkssection from "./landingPage/Howitworkssection";
-import FinalCTASection from "./landingPage/FinalCTASection";
-import Footer from "./landingPage/Footer";
-import Header from "./landingPage/Header";
+import Hero from "./landingPage/Hero.jsx";
+import ProblemSection from "./landingPage/ProblemSection.jsx";
+import SolutionSection from "./landingPage/Solutionsection.jsx";
+import Howitworkssection from "./landingPage/Howitworkssection.jsx";
+import FinalCTASection from "./landingPage/FinalCTASection.jsx";
+import Footer from "./landingPage/Footer.jsx";
+import Header from "./landingPage/Header.jsx";
 
 function App() {
   return (
