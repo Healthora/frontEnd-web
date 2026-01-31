@@ -4,6 +4,7 @@ import SolutionSection from "./landingPage/Solutionsection";
 import Howitworkssection from "./landingPage/Howitworkssection";
 import FinalCTASection from "./landingPage/FinalCTASection";
 import Footer from "./landingPage/Footer";
+import Header from "./landingPage/Header";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Howitworkssection />
       <FinalCTASection />
       <Footer />
+      <Header />
     </div>
   );
 }

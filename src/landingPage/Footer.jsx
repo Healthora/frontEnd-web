@@ -9,7 +9,7 @@ const Footer = () => {
       { name: "Problem", href: "#ProblemSection" },
       { name: "Solution", href: "#SolutionSection" },
       { name: "Comment ça marche", href: "#HowItWorksSection" },
-      { name: "FAQ", href: "#faq" },
+      { name: "inscrire", href: "#FinalCTASection" },
     ]
   };
 

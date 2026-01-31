@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Check } from 'lucide-react';
 
 const FinalCTASection = () => {
   return (
-    <section className="relative py-24 lg:py-32 bg-[#0B0C10] overflow-hidden">
+    <section className="relative py-24 lg:py-32 bg-[#0B0C10] overflow-hidden" id='FinalCTASection'>
       {/* Large radial gradient glow */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-[800px] h-[800px] bg-gradient-to-r from-sky-500/30 via-indigo-500/30 to-sky-500/30 rounded-full blur-[150px] animate-pulse-slow"></div>
