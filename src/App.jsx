@@ -2,6 +2,8 @@ import Hero from "./landingPage/Hero";
 import ProblemSection from "./landingPage/ProblemSection";
 import SolutionSection from "./landingPage/Solutionsection";
 import Howitworkssection from "./landingPage/Howitworkssection";
+import FinalCTASection from "./landingPage/FinalCTASection";
+import Footer from "./landingPage/Footer";
 
 function App() {
   return (
@@ -10,6 +12,8 @@ function App() {
       <ProblemSection />
       <SolutionSection />
       <Howitworkssection />
+      <FinalCTASection />
+      <Footer />
     </div>
   );
 }

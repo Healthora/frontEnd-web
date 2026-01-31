@@ -36,7 +36,7 @@ const SolutionSection = () => {
   ];
 
   return (
-    <section className="relative py-20 lg:py-32 bg-gradient-to-b from-[#0B0C10] to-[#111318] overflow-hidden">
+    <section className="relative py-20 lg:py-32 bg-gradient-to-b from-[#0B0C10] to-[#111318] overflow-hidden" id='SolutionSection'>
       {/* Background gradient glows */}
       <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-[150px]"></div>
       <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[150px]"></div>

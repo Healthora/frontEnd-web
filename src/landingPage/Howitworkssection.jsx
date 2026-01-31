@@ -24,7 +24,7 @@ const HowItWorksSection = () => {
   ];
 
   return (
-    <section className="relative py-20 lg:py-32 bg-[#0B0C10] overflow-hidden">
+    <section className="relative py-20 lg:py-32 bg-[#0B0C10] overflow-hidden" id='HowItWorksSection'>
       {/* Background gradient glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-sky-500/10 to-indigo-500/10 rounded-full blur-[150px]"></div>
 
