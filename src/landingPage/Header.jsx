@@ -9,23 +9,38 @@ const Header = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Smooth Scroll Function
+  const handleSmoothScroll = (e, href) => {
+    e.preventDefault();
+    const targetId = href.replace('#', '');
+    const elem = document.getElementById(targetId);
+    
+    if (elem) {
+      elem.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+    
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+  };
+
   const navLinks = [
-    { name: "Problème", href: "#ProblemSection" },
-    { name: "Solution", href: "#SolutionSection" },
-    { name: "Comment ça marche", href: "#HowItWorksSection" },
-    { name: "Tarifs", href: "#pricing" },
+    { name: "Problème", href: "#ProblemsSectionMedical" },
+    { name: "Solution", href: "#SolutionsSectionMedical" },
+    { name: "Fonctionnement", href: "#HowItWorksSection" },
   ];
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#0B0C10]/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
+          ? 'bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm'
           : 'bg-transparent'
       }`}
     >
@@ -33,12 +48,16 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-sky-500/30">
+          <a 
+            href="#home" 
+            onClick={(e) => handleSmoothScroll(e, '#home')}
+            className="flex items-center gap-2 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-sky-200">
               <Calendar className="text-white w-6 h-6" />
             </div>
-            <span className="font-bold text-xl tracking-tight text-white hidden sm:block">
-              Medeli<span className="text-sky-400">Rendez-Vous</span>
+            <span className="font-bold text-xl tracking-tight text-gray-900 hidden sm:block">
+              Medeli<span className="text-sky-600">RDV</span>
             </span>
           </a>
 
@@ -48,10 +67,11 @@ const Header = () => {
               <a
                 key={index}
                 href={link.href}
-                className="px-4 py-2 text-gray-300 hover:text-white text-sm font-medium rounded-lg hover:bg-white/5 transition-all duration-200 relative group"
+                onClick={(e) => handleSmoothScroll(e, link.href)}
+                className="px-4 py-2 text-gray-600 hover:text-sky-600 text-sm font-semibold rounded-lg hover:bg-sky-50 transition-all duration-200 relative group"
               >
                 {link.name}
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-sky-400 to-indigo-400 group-hover:w-3/4 transition-all duration-300 rounded-full"></span>
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-sky-500 group-hover:w-1/2 transition-all duration-300 rounded-full"></span>
               </a>
             ))}
           </nav>
@@ -60,33 +80,28 @@ const Header = () => {
           <div className="hidden lg:flex items-center gap-3">
             <a
               href="#login"
-              className="px-5 py-2.5 text-gray-300 hover:text-white font-medium text-sm rounded-full hover:bg-white/5 transition-all duration-200"
+              className="px-5 py-2.5 text-gray-700 hover:text-sky-600 font-bold text-sm transition-all duration-200"
             >
               Connexion
             </a>
             <a
-              href="#FinalCTASection"
-              className="group relative px-6 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full font-semibold text-sm text-white shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all duration-300 overflow-hidden"
+              href="#FinalCTASectionMedical"
+              onClick={(e) => handleSmoothScroll(e, '#FinalCTASectionMedical')}
+              className="group relative px-6 py-2.5 bg-gray-900 rounded-full font-bold text-sm text-white shadow-xl shadow-gray-200 hover:bg-sky-600 hover:scale-105 transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10 flex items-center gap-2">
-                S'inscrire
+                Essai Gratuit
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-400 to-indigo-400 blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
             </a>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all"
-            aria-label="Toggle menu"
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-gray-50 border border-gray-200 text-gray-600 hover:text-sky-600 transition-all"
           >
-            {isMobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -97,33 +112,24 @@ const Header = () => {
           isMobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="bg-[#0B0C10]/95 backdrop-blur-xl border-t border-white/10">
+        <div className="bg-white border-t border-gray-100 shadow-xl">
           <div className="max-w-7xl mx-auto px-6 py-6 space-y-2">
-            {/* Mobile Nav Links */}
             {navLinks.map((link, index) => (
               <a
                 key={index}
                 href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-300 hover:text-white text-sm font-medium rounded-lg hover:bg-white/5 transition-all duration-200"
+                onClick={(e) => handleSmoothScroll(e, link.href)}
+                className="block px-4 py-3 text-gray-600 hover:text-sky-600 text-base font-bold rounded-xl hover:bg-sky-50 transition-all duration-200"
               >
                 {link.name}
               </a>
             ))}
 
-            {/* Mobile CTA Buttons */}
-            <div className="pt-4 space-y-2 border-t border-white/10">
+            <div className="pt-4 space-y-3 border-t border-gray-100">
               <a
-                href="#login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block w-full px-4 py-3 text-center text-gray-300 hover:text-white font-medium text-sm rounded-lg border border-white/10 hover:bg-white/5 transition-all duration-200"
-              >
-                Connexion
-              </a>
-              <a
-                href="#FinalCTASection"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block w-full px-4 py-3 text-center bg-gradient-to-r from-sky-500 to-indigo-500 rounded-lg font-semibold text-sm text-white shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 transition-all duration-300"
+                href="#FinalCTASectionMedical"
+                onClick={(e) => handleSmoothScroll(e, '#FinalCTASectionMedical')}
+                className="block w-full px-4 py-3 text-center bg-sky-600 rounded-xl font-bold text-sm text-white shadow-lg shadow-sky-100 transition-all"
               >
                 S'inscrire Gratuitement
               </a>
@@ -131,14 +137,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-
-      {/* Overlay for mobile menu */}
-      {isMobileMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm -z-10"
-          onClick={() => setIsMobileMenuOpen(false)}
-        ></div>
-      )}
     </header>
   );
 };

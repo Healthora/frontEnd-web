@@ -1,227 +1,235 @@
-import React from 'react';
-import { Calendar, Smartphone, Bell, Users, BarChart3, Check, Sparkles, TrendingUp } from 'lucide-react';
+import React from "react";
+import {
+  Calendar,
+  Smartphone,
+  Bell,
+  Users,
+  BarChart3,
+  FileText,
+  Shield,
+  Zap,
+  Star,
+} from "lucide-react";
 
-const SolutionSection = () => {
+const SolutionsSectionMedical = () => {
   const features = [
-    {
-      icon: Calendar,
-      title: "Calendrier Intelligent",
-      description: "Visualisez tous vos rendez-vous en un clin d'œil. Fini les conflits d'horaires.",
-      gradient: "from-sky-500 to-sky-600"
-    },
     {
       icon: Smartphone,
       title: "Réservation en Ligne 24/7",
-      description: "Vos patients réservent directement, même en dehors des heures d'ouverture.",
-      gradient: "from-indigo-500 to-indigo-600"
+      description:
+        "Vos patients réservent directement depuis leur smartphone, même en dehors des heures d'ouverture. Fini les appels manqués.",
+      benefit: "Économisez 2-3h/jour",
+      gradient: "from-sky-500 to-sky-600",
     },
     {
       icon: Bell,
-      title: "Rappels Automatiques",
-      description: "SMS et emails envoyés automatiquement. Réduisez les absences de 70%.",
-      gradient: "from-sky-500 to-indigo-500"
+      title: "Rappels email Automatiques",
+      description:
+        "Envoi automatique de rappels personnalisés 24h avant le rendez-vous et aussi 2h avant le rendez vous. Réduisez drastiquement vos absences.",
+      benefit: "70% moins de no-shows",
+      gradient: "from-emerald-500 to-emerald-600",
+      featured: true,
+    },
+    {
+      icon: Calendar,
+      title: "Agenda Intelligent Multi-vues",
+      description:
+        "Visualisez votre planning par jour, semaine ou mois. Codes couleur par type de consultation et gestion des urgences.",
+      benefit: "Zéro double réservation",
+      gradient: "from-indigo-500 to-indigo-600",
     },
     {
       icon: Users,
-      title: "Liste de Patients Centralisée",
-      description: "Toutes les informations essentielles accessibles en un clic.",
-      gradient: "from-indigo-500 to-sky-500"
+      title: "Dossier Patient Centralisé",
+      description:
+        "Toutes les informations médicales en un clic : historique, allergies, prescriptions, documents. Sécurisé et conforme HDS.",
+      benefit: "15 min économisées/patient",
+      gradient: "from-sky-500 to-indigo-500",
     },
     {
       icon: BarChart3,
-      title: "Suivi des Rendez-vous",
-      description: "Statistiques en temps réel pour optimiser votre planning.",
-      gradient: "from-sky-600 to-indigo-600"
-    }
+      title: "Statistiques en Temps Réel",
+      description:
+        "Suivez vos KPIs : taux de présence, revenus, pathologies fréquentes. Optimisez votre pratique avec des données concrètes.",
+      benefit: "Décisions éclairées",
+      gradient: "from-purple-500 to-purple-600",
+    },
+    {
+      icon: FileText,
+      title: "Facturation Automatisée",
+      description:
+        "Génération automatique des factures et relances. Export comptable en un clic. Gagnez du temps sur l'administratif.",
+      benefit: "100% des paiements suivis",
+      gradient: "from-sky-600 to-indigo-600",
+    },
   ];
 
   return (
-    <section className="relative py-20 lg:py-32 bg-gradient-to-b from-[#0B0C10] to-[#111318] overflow-hidden" id='SolutionSection'>
-      {/* Background gradient glows */}
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-[150px]"></div>
-      <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[150px]"></div>
+    <section
+      className="relative lg:py-32 bg-white overflow-hidden"
+      id="SolutionsSectionMedical"
+    >
+      {/* Background pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000000' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+        }}
+      ></div>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-        
-        {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-500/10 border border-sky-500/20 backdrop-blur-sm mb-6">
-            <Sparkles className="w-4 h-4 text-sky-400" />
-            <span className="text-sm font-medium text-sky-300">La Solution</span>
+      {/* Decorative colored blurs */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-sky-100/50 to-transparent rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-100/50 to-transparent rounded-full blur-3xl"></div>
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="flex flex-col lg:flex-row items-center justify-between mb-16 gap-8">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-50 border border-sky-100 mb-6">
+              <Zap className="w-4 h-4 text-sky-600" />
+              <span className="text-sm font-semibold text-sky-700 tracking-wide">
+                La Solution Complète
+              </span>
+            </div>
+
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+              Une Plateforme Pensée{" "}
+              <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">
+                Pour Vous
+              </span>
+            </h2>
+
+            <p className="text-xl text-gray-600 leading-relaxed">
+              Conçue en collaboration avec des praticiens pour répondre aux
+              réalités du terrain médical.
+            </p>
           </div>
-          
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Tout Ce Dont Vous Avez Besoin,{' '}
-            <span className="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">
-              En Un Seul Endroit
-            </span>
-          </h2>
-          
-          <p className="text-lg text-gray-400 leading-relaxed">
-            Une plateforme complète conçue pour simplifier votre quotidien et améliorer l'expérience de vos patients.
-          </p>
+          <div className="hidden lg:block">
+            <img
+              src="/src/assets/doctorimg.png"
+              alt="doctor"
+              className="w-64 h-64 object-cover rounded-2xl shadow-lg border-4 border-transparent"
+            />
+          </div>
         </div>
 
-        {/* Two-column layout */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          
-          {/* Left Column - Features List */}
-          <div className="space-y-6">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              
-              return (
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+
+            return (
+              <div
+                key={index}
+                className={`group relative bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-sky-200 hover:shadow-xl transition-all duration-300 ${
+                  feature.featured
+                    ? "ring-2 ring-emerald-500 ring-offset-2"
+                    : ""
+                }`}
+              >
+                {/* Featured badge */}
+                {feature.featured && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-lg">
+                    ⭐ LE PLUS EFFICACE
+                  </div>
+                )}
+
+                {/* Icon */}
                 <div
-                  key={index}
-                  className="group relative bg-[#111318]/50 backdrop-blur-sm border border-gray-800/50 rounded-2xl p-6 hover:border-sky-500/30 hover:bg-[#111318]/80 transition-all duration-300"
+                  className={`w-14 h-14 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
                 >
-                  {/* Hover glow */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-sky-500/0 to-indigo-500/0 group-hover:from-sky-500/5 group-hover:to-indigo-500/5 rounded-2xl transition-all duration-300"></div>
-                  
-                  <div className="relative flex items-start gap-4">
-                    {/* Icon */}
-                    <div className={`flex-shrink-0 w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-sky-100 transition-colors">
-                        {feature.title}
-                      </h3>
-                      <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
-                        {feature.description}
-                      </p>
-                    </div>
-
-                    {/* Check mark */}
-                    <div className="flex-shrink-0 w-6 h-6 bg-sky-500/20 border border-sky-500/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Check className="w-4 h-4 text-sky-400" />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Right Column - Dashboard Preview */}
-          <div className="relative">
-            
-            {/* Glow effect behind card */}
-            <div className="absolute inset-0 bg-gradient-to-br from-sky-500/20 to-indigo-500/20 rounded-3xl blur-3xl"></div>
-            
-            {/* Main dashboard card */}
-            <div className="relative bg-[#111318]/90 backdrop-blur-xl border border-gray-800/50 rounded-3xl p-8 shadow-2xl">
-              
-              {/* Header */}
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-2xl font-bold text-white mb-1">Tableau de Bord</h3>
-                  <p className="text-gray-400 text-sm">Vue d'ensemble de votre pratique</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-white" />
-                </div>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-gradient-to-br from-sky-500/10 to-transparent border border-sky-500/20 rounded-2xl p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Calendar className="w-5 h-5 text-sky-400" />
-                    <p className="text-gray-400 text-sm">Aujourd'hui</p>
-                  </div>
-                  <p className="text-3xl font-bold text-white mb-1">12</p>
-                  <p className="text-sky-400 text-sm font-medium">Rendez-vous</p>
+                  <Icon className="w-7 h-7 text-white" />
                 </div>
 
-                <div className="bg-gradient-to-br from-indigo-500/10 to-transparent border border-indigo-500/20 rounded-2xl p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Users className="w-5 h-5 text-indigo-400" />
-                    <p className="text-gray-400 text-sm">Cette semaine</p>
-                  </div>
-                  <p className="text-3xl font-bold text-white mb-1">89</p>
-                  <p className="text-indigo-400 text-sm font-medium">Patients vus</p>
-                </div>
-              </div>
+                {/* Content */}
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-sky-600 transition-colors">
+                  {feature.title}
+                </h3>
 
-              {/* Performance indicator */}
-              <div className="bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-sky-500/10 border border-gray-700/50 rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-sky-400" />
-                    <p className="text-white font-semibold">Taux de Présence</p>
-                  </div>
-                  <span className="px-3 py-1 bg-sky-500/20 border border-sky-500/30 rounded-full text-sky-400 text-sm font-bold">
-                    +18%
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  {feature.description}
+                </p>
+
+                {/* Benefit badge */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-sky-50 border border-sky-100 rounded-full">
+                  <Zap className="w-3.5 h-3.5 text-sky-600" />
+                  <span className="text-sm font-semibold text-sky-700">
+                    {feature.benefit}
                   </span>
                 </div>
-                
-                {/* Progress bar */}
-                <div className="relative w-full h-3 bg-gray-800/50 rounded-full overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-sky-500 via-indigo-500 to-sky-400 rounded-full w-[92%]"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-sky-400/50 to-indigo-400/50 rounded-full w-[92%] blur-sm"></div>
-                </div>
-                
-                <div className="flex items-center justify-between mt-3">
-                  <p className="text-gray-400 text-sm">Mois dernier: 74%</p>
-                  <p className="text-white font-bold text-lg">92%</p>
-                </div>
               </div>
-
-              {/* Bottom action hint */}
-              <div className="mt-6 pt-6 border-t border-gray-800/50">
-                <div className="flex items-center gap-3 text-gray-400">
-                  <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-sky-500/30 to-transparent rounded-full"></div>
-                  <Bell className="w-4 h-4 text-sky-400" />
-                  <p className="text-xs">Rappels automatiques activés</p>
-                  <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Floating indicator */}
-            <div className="absolute -top-4 -left-4 bg-[#111318]/90 backdrop-blur-xl border border-sky-500/30 rounded-2xl px-4 py-3 shadow-xl shadow-sky-500/20 animate-float">
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="w-2 h-2 bg-sky-400 rounded-full animate-ping absolute"></div>
-                  <div className="w-2 h-2 bg-sky-400 rounded-full"></div>
-                </div>
-                <p className="text-white text-sm font-semibold">Synchronisé</p>
-              </div>
-            </div>
-
-          </div>
-
+            );
+          })}
         </div>
 
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <button className="group relative px-8 py-4 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full font-semibold text-white shadow-lg shadow-sky-500/50 hover:shadow-sky-500/70 hover:scale-105 transition-all duration-300">
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              Découvrir Toutes les Fonctionnalités
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </span>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-sky-400 to-indigo-400 blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-          </button>
+        {/* Testimonial Card */}
+        <div className="bg-gradient-to-br from-sky-600 to-indigo-600 rounded-3xl p-8 md:p-12 shadow-2xl">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Left - Testimonial */}
+            <div className="flex flex-col gap-6 text-white">
+              <div className="flex gap-1 text-yellow-300">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Star key={i} className="w-5 h-5 fill-current" />
+                ))}
+              </div>
+
+              <blockquote className="text-2xl md:text-3xl font-bold leading-snug">
+                "Depuis que j'utilise cette plateforme, mon cabinet est
+                transformé. J'ai récupéré 5 heures par semaine et mes patients
+                adorent la simplicité."
+              </blockquote>
+
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center">
+                  <span className="text-2xl font-bold">Dr</span>
+                </div>
+                <div>
+                  <p className="font-bold text-lg">Dr. abdou hadjou</p>
+                  <p className="text-sky-100">Médecin Généraliste</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right - Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <p className="text-5xl font-black text-white mb-2">92%</p>
+                <p className="text-sky-100 font-medium">Taux de présence</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <p className="text-5xl font-black text-white mb-2">-70%</p>
+                <p className="text-sky-100 font-medium">No-shows</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <p className="text-5xl font-black text-white mb-2">5h</p>
+                <p className="text-sky-100 font-medium">Gagnées/semaine</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <p className="text-5xl font-black text-white mb-2">248</p>
+                <p className="text-sky-100 font-medium">Patients actifs</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Note */}
+        <div className="mt-12 flex items-center justify-center gap-8 text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-emerald-600" />
+            <span className="font-semibold">Certifié HDS</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-sky-600" />
+            <span className="font-semibold">Conforme RGPD</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-indigo-600" />
+            <span className="font-semibold">ISO 27001</span>
+          </div>
         </div>
       </div>
-
-      {/* Animation */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 };
 
-export default SolutionSection;
+export default SolutionsSectionMedical;
