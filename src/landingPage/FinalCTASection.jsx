@@ -54,14 +54,14 @@ const FinalCTASectionMedical = () => {
 
         {/* CTA Buttons (Matching Hero Style) */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
-          <button className="group relative px-10 py-5 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-black text-lg text-white shadow-xl shadow-sky-100 hover:scale-[1.02] transition-all duration-300 min-w-[280px]">
+          <button className="cursor-pointer group relative px-10 py-5 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-black text-lg text-white shadow-xl shadow-sky-100 hover:scale-[1.02] transition-all duration-300 min-w-[280px]">
             <span className="relative z-10 flex items-center justify-center gap-3">
               Essai Gratuit Immédiat
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </span>
           </button>
 
-          <button className="flex items-center justify-center gap-3 px-10 py-5 border-2 border-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 min-w-[280px]">
+          <button className="cursor-pointer flex items-center justify-center gap-3 px-10 py-5 border-2 border-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 min-w-[280px]">
             <Phone className="w-5 h-5 text-gray-900" />
             Parler à un Expert
           </button>
