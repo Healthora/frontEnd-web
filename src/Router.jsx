@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from './App'
-import MedicalDashboard from "./Dashboard/Dashboard";
+import Dashboard from "./Dashboard/DashboardApp";
 
 export const router = createBrowserRouter([
     {path: '/', element: <App/> },
-    {path: '/Dashboard', element: <MedicalDashboard/> },
+    {path: '/Dashboard', element: <Dashboard/> },
 ])
