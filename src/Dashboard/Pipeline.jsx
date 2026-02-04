@@ -290,7 +290,7 @@ const Pipeline = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sky-50/30 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sky-50/30 ">
       {/* Custom Scrollbar Styles for the main Horizontal Scroll */}
       <style>{`
         .horizontal-scroll::-webkit-scrollbar {
@@ -327,10 +327,10 @@ const Pipeline = () => {
                 <Filter className="w-4 h-4" />
                 Filtrer
               </button>
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+              {/* <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
                 <Download className="w-4 h-4" />
                 Exporter
-              </button>
+              </button> */}
               <button className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all">
                 <Plus className="w-5 h-5" />
                 Nouveau RDV
@@ -383,7 +383,7 @@ const Pipeline = () => {
                 </div>
               </div>
 
-              {/* Appointments List - No internal scrolling */}
+              {/* Appointments List */}
               <div className="space-y-3">
                 {appointments[column.id]?.map((appointment) => (
                   <AppointmentCard

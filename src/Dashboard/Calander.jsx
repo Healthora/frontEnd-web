@@ -14,6 +14,7 @@ import {
 
 const Calendar = () => {
   const [view, setView] = useState('week'); 
+  /* eslint-disable no-unused-vars */
   const [selectedDate, setSelectedDate] = useState(new Date(2026, 1, 3)); 
 
   // Updated Data: Only name, time, type (and id/day/status for logic)
@@ -24,7 +25,7 @@ const Calendar = () => {
       time: '09:00',
       type: 'Consultation',
       status: 'confirmed',
-      day: 1 
+      day: 4
     },
     {
       id: 2,
@@ -101,7 +102,7 @@ const Calendar = () => {
       <div
         className={`group ${colors.bg} ${colors.border} border-2 rounded-xl p-3 cursor-pointer transition-all duration-200 ${colors.hover} hover:shadow-md`}
       >
-        <div className="flex items-start justify-between mb-2">
+        <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 ${colors.dot} rounded-full`} />
             <span className={`text-xs font-bold ${colors.text}`}>
@@ -109,6 +110,7 @@ const Calendar = () => {
             </span>
           </div>
           <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/50 rounded">
+            {/* edit button */}
             <MoreVertical className="w-3.5 h-3.5 text-gray-500" />
           </button>
         </div>
@@ -124,7 +126,7 @@ const Calendar = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sky-50/30 ">
-      <div className="max-w-[1400px] mx-auto p-4">  
+      <div className="max-w-[1400px] mx-auto ">  
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -140,13 +142,13 @@ const Calendar = () => {
 
           {/* Toolbar */}
           <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-            <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center justify-between flex-wrap gap-4 ">
               <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
                 {['month', 'week', 'day'].map((v) => (
                   <button
                     key={v}
                     onClick={() => setView(v)}
-                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer ${
                       view === v
                         ? 'bg-white text-gray-900 shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
@@ -185,8 +187,9 @@ const Calendar = () => {
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
           {view === 'week' && (
             <div className="p-6">
+              {/* days */}
               <div className="grid grid-cols-8 gap-4 mb-4">
-                <div className="text-xs font-bold text-gray-500 uppercase flex items-end pb-2">Heure</div>
+                {/* <div className="text-xs font-bold text-gray-500 uppercase flex items-end pb-2">Heure</div> */}
                 {weekDays.map((day, idx) => (
                   <div key={day} className="text-center">
                     <div className="text-xs font-bold text-gray-500 uppercase mb-2">{day}</div>
@@ -194,12 +197,13 @@ const Calendar = () => {
                   </div>
                 ))}
               </div>
+              {/* time */}
               <div className="grid grid-cols-8 gap-4">
-                <div className="space-y-16">
+                {/* <div className="space-y-16">
                   {timeSlots.map((time) => (
                     <div key={time} className="text-xs font-semibold text-gray-500 -mt-2">{time}</div>
                   ))}
-                </div>
+                </div> */}
                 {weekDays.map((day, dayIdx) => (
                   <div key={day} className="relative">
                     <div className="absolute inset-0 space-y-16">

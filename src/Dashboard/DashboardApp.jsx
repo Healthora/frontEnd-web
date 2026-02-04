@@ -18,6 +18,7 @@ import {
 import Dashboard  from "./Dashboard";
 import Calander from "./Calander";
 import Pipeline from "./Pipeline";
+import Statisticsdashboard from "./Statisticsdashboard";
 
 const MedicalDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -220,7 +221,8 @@ const MedicalDashboard = () => {
           {/* Page Header */}
           {activePage == 'dashboard' && <Dashboard />}
           {activePage == 'calendar' && <Calander />}
-          {activePage == 'appointments' && <Pipeline />}               
+          {activePage == 'appointments' && <Pipeline />}        
+          {activePage == 'statistics' && <Statisticsdashboard />}       
         </main>
       </div>
     </div>
