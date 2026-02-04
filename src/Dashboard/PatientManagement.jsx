@@ -64,13 +64,13 @@ const PatientManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-6 md:p-10 font-sans text-slate-900">
+    <div className="min-h-screen font-sans text-slate-900">
       <div className="max-w-7xl mx-auto">
         
         {/* --- HEADER SECTION --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Patients</h1>
+              <h1 className="text-3xl font-black text-gray-900 mb-2">Patients</h1>
             <p className="text-slate-500 text-sm mt-1">Gérez votre base de patients et leurs rendez-vous.</p>
           </div>
           <button className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-xl font-semibold shadow-md shadow-sky-200 hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95">
