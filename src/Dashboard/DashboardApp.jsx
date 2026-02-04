@@ -19,6 +19,7 @@ import Dashboard  from "./Dashboard";
 import Calander from "./Calander";
 import Pipeline from "./Pipeline";
 import Statisticsdashboard from "./Statisticsdashboard";
+import PatientManagement from "./PatientManagement";
 
 const MedicalDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -223,6 +224,10 @@ const MedicalDashboard = () => {
           {activePage == 'calendar' && <Calander />}
           {activePage == 'appointments' && <Pipeline />}        
           {activePage == 'statistics' && <Statisticsdashboard />}       
+          {activePage == 'patients' && <PatientManagement />}       
+             
+
+          
         </main>
       </div>
     </div>
