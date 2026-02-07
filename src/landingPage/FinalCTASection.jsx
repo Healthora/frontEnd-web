@@ -1,5 +1,7 @@
 import React from 'react';
 import { ArrowRight, Check, Clock, Shield, Star, Phone, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { isAuthenticated } from '../utils/auth';
 
 const FinalCTASectionMedical = () => {
   return (
@@ -19,7 +21,7 @@ const FinalCTASectionMedical = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
-        
+
         {/* Main Content */}
         <div className="mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-100 mb-8 mx-auto">
@@ -35,9 +37,9 @@ const FinalCTASectionMedical = () => {
               Votre Cabinet Médical ?
             </span>
           </h2>
-          
+
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Rejoignez les centaines de confrères qui ont déjà repris le contrôle de leur temps 
+            Rejoignez les centaines de confrères qui ont déjà repris le contrôle de leur temps
             et amélioré l'expérience de leurs patients.
           </p>
         </div>
@@ -54,12 +56,27 @@ const FinalCTASectionMedical = () => {
 
         {/* CTA Buttons (Matching Hero Style) */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
-          <button className="cursor-pointer group relative px-10 py-5 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-black text-lg text-white shadow-xl shadow-sky-100 hover:scale-[1.02] transition-all duration-300 min-w-[280px]">
-            <span className="relative z-10 flex items-center justify-center gap-3">
-              Essai Gratuit Immédiat
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </button>
+          {isAuthenticated() ? (
+            <Link
+              to="/dashboard"
+              className="group relative px-10 py-5 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-black text-lg text-white shadow-xl shadow-sky-100 hover:scale-[1.02] transition-all duration-300 min-w-[280px] text-center"
+            >
+              <span className="relative z-10 flex items-center justify-center gap-3">
+                Accéder au Tableau de Bord
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+          ) : (
+            <Link
+              to="/signup"
+              className="group relative px-10 py-5 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-black text-lg text-white shadow-xl shadow-sky-100 hover:scale-[1.02] transition-all duration-300 min-w-[280px] text-center"
+            >
+              <span className="relative z-10 flex items-center justify-center gap-3">
+                Essai Gratuit Immédiat
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+          )}
 
           <button className="cursor-pointer flex items-center justify-center gap-3 px-10 py-5 border-2 border-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 min-w-[280px]">
             <Phone className="w-5 h-5 text-gray-900" />
@@ -97,7 +114,7 @@ const FinalCTASectionMedical = () => {
             </div>
             <div className="flex-1 text-left">
               <p className="text-lg md:text-xl text-gray-700 italic mb-4 leading-relaxed">
-                "En 3 mois, j'ai récupéré 5 heures par semaine et mes patients sont ravis. 
+                "En 3 mois, j'ai récupéré 5 heures par semaine et mes patients sont ravis.
                 Le meilleur investissement pour mon cabinet."
               </p>
               <div>

@@ -7,6 +7,8 @@ import {
   ArrowRight,
   PlayCircle,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { isAuthenticated } from "../utils/auth";
 
 const HeroSection = () => {
   function getCurrentDateFR() {
@@ -68,13 +70,29 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="group relative px-8 py-4 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-bold text-lg text-white shadow-xl shadow-sky-200 hover:shadow-sky-300 hover:scale-[1.02] transition-all duration-300">
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  Démarrer l'Essai Gratuit
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
-              </button>
+              {isAuthenticated() ? (
+                <Link
+                  to="/dashboard"
+                  className="group relative px-8 py-4 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-bold text-lg text-white shadow-xl shadow-sky-200 hover:shadow-sky-300 hover:scale-[1.02] transition-all duration-300 text-center"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Accéder au Tableau de Bord
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                </Link>
+              ) : (
+                <Link
+                  to="/signup"
+                  className="group relative px-8 py-4 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-bold text-lg text-white shadow-xl shadow-sky-200 hover:shadow-sky-300 hover:scale-[1.02] transition-all duration-300 text-center"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Démarrer l'Essai Gratuit
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                </Link>
+              )}
 
               <button className="flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-200 rounded-xl font-semibold text-lg text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300">
                 <PlayCircle className="w-5 h-5 text-gray-900" />

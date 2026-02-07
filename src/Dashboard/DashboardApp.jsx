@@ -15,7 +15,9 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import Dashboard  from "./Dashboard";
+import { useNavigate } from "react-router-dom";
+import { getCurrentUser, logout } from "../utils/auth";
+import Dashboard from "./Dashboard";
 import Calander from "./Calander";
 import Pipeline from "./Pipeline";
 import Statisticsdashboard from "./Statisticsdashboard";
@@ -23,13 +25,20 @@ import PatientManagement from "./PatientManagement";
 import SettingsPage from "./SettingsPage";
 
 const MedicalDashboard = () => {
+  const navigate = useNavigate();
   const [activePage, setActivePage] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [user, setUser] = useState(getCurrentUser());
+
+  const handleLogout = () => {
+    logout();
+    navigate('/signin');
+  };
 
   const menuItems = [
     { id: "dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
     { id: "calendar", label: "Calendrier", icon: Calendar },
-    { id: "appointments",label: "Rendez-vous", icon: CalendarCheck,badge: 12},
+    { id: "appointments", label: "Rendez-vous", icon: CalendarCheck, badge: 12 },
     { id: "patients", label: "Patients", icon: Users },
     { id: "statistics", label: "Statistiques", icon: BarChart3 },
     { id: "settings", label: "Paramètres", icon: Settings },
@@ -39,9 +48,8 @@ const MedicalDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sky-50/30">
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white border-r border-gray-100 shadow-xl shadow-gray-200/50 transition-all duration-300 z-40 ${
-          sidebarOpen ? "w-72" : "w-20"
-        }`}
+        className={`fixed top-0 left-0 h-screen bg-white border-r border-gray-100 shadow-xl shadow-gray-200/50 transition-all duration-300 z-40 ${sidebarOpen ? "w-72" : "w-20"
+          }`}
       >
         {/* Logo Section */}
         <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100">
@@ -83,18 +91,16 @@ const MedicalDashboard = () => {
               <button
                 key={item.id}
                 onClick={() => setActivePage(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 relative group ${
-                  isActive
+                className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 relative group ${isActive
                     ? "bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-lg shadow-sky-500/30"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 <Icon
-                  className={`w-5 h-5 flex-shrink-0 ${
-                    isActive
+                  className={`w-5 h-5 flex-shrink-0 ${isActive
                       ? "text-white"
                       : "text-gray-500 group-hover:text-sky-500"
-                  }`}
+                    }`}
                 />
 
                 {sidebarOpen && (
@@ -102,11 +108,10 @@ const MedicalDashboard = () => {
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.badge && (
                       <span
-                        className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                          isActive
+                        className={`px-2 py-0.5 rounded-full text-xs font-bold ${isActive
                             ? "bg-white/20 text-white"
                             : "bg-sky-100 text-sky-600"
-                        }`}
+                          }`}
                       >
                         {item.badge}
                       </span>
@@ -135,11 +140,14 @@ const MedicalDashboard = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-gray-900 truncate">
-                  Dr. Jean Martin
+                  {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Dr. Inconnu'}
                 </p>
-                <p className="text-xs text-gray-500">Médecin Généraliste</p>
+                <p className="text-xs text-gray-500">Médecin</p>
               </div>
-              <button className="p-1.5 hover:bg-white rounded-lg transition-colors">
+              <button
+                onClick={handleLogout}
+                className="p-1.5 hover:bg-white rounded-lg transition-colors"
+              >
                 <LogOut className="w-4 h-4 text-gray-500" />
               </button>
             </div>
@@ -202,9 +210,9 @@ const MedicalDashboard = () => {
               <div className="flex items-center gap-3 pl-3 pr-2 py-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer border border-gray-100">
                 <div className="hidden md:block text-right">
                   <p className="text-sm font-bold text-gray-900">
-                    Dr. Jean Martin
+                    {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Dr. Inconnu'}
                   </p>
-                  <p className="text-xs text-gray-500">Médecin Généraliste</p>
+                  <p className="text-xs text-gray-500">Médecin</p>
                 </div>
                 <div className="relative">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
@@ -223,10 +231,10 @@ const MedicalDashboard = () => {
           {/* Page Header */}
           {activePage == 'dashboard' && <Dashboard />}
           {activePage == 'calendar' && <Calander />}
-          {activePage == 'appointments' && <Pipeline />}        
-          {activePage == 'statistics' && <Statisticsdashboard />}       
-          {activePage == 'patients' && <PatientManagement />}       
-          {activePage == 'settings' && <SettingsPage />}                
+          {activePage == 'appointments' && <Pipeline />}
+          {activePage == 'statistics' && <Statisticsdashboard />}
+          {activePage == 'patients' && <PatientManagement />}
+          {activePage == 'settings' && <SettingsPage />}
         </main>
       </div>
     </div>

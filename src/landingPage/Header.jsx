@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Calendar, Menu, X, ArrowRight } from 'lucide-react';
+import { isAuthenticated } from '../utils/auth';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,14 +20,14 @@ const Header = () => {
     e.preventDefault();
     const targetId = href.replace('#', '');
     const elem = document.getElementById(targetId);
-    
+
     if (elem) {
       elem.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       });
     }
-    
+
     // Close mobile menu if open
     setIsMobileMenuOpen(false);
   };
@@ -38,18 +40,17 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm'
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? 'bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm'
+        : 'bg-transparent'
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          
+
           {/* Logo */}
-          <a 
-            href="#home" 
+          <a
+            href="#home"
             onClick={(e) => handleSmoothScroll(e, '#home')}
             className="flex items-center gap-2 group"
           >
@@ -78,22 +79,35 @@ const Header = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            <a
-              href="#login"
-              className="px-5 py-2.5 text-gray-700 hover:text-sky-600 font-bold text-sm transition-all duration-200"
-            >
-              Connexion
-            </a>
-            <a
-              href="#FinalCTASectionMedical"
-              onClick={(e) => handleSmoothScroll(e, '#FinalCTASectionMedical')}
-              className="group relative px-6 py-2.5 bg-gray-900 rounded-full font-bold text-sm text-white shadow-xl shadow-gray-200 hover:bg-sky-600 hover:scale-105 transition-all duration-300 overflow-hidden"
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                Essai Gratuit
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </a>
+            {isAuthenticated() ? (
+              <Link
+                to="/dashboard"
+                className="group relative px-6 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-full font-bold text-sm text-white shadow-xl shadow-sky-200 hover:scale-105 transition-all duration-300"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Tableau de Bord
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/signin"
+                  className="px-5 py-2.5 text-gray-700 hover:text-sky-600 font-bold text-sm transition-all duration-200"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  to="/signup"
+                  className="group relative px-6 py-2.5 bg-gray-900 rounded-full font-bold text-sm text-white shadow-xl shadow-gray-200 hover:bg-sky-600 hover:scale-105 transition-all duration-300 overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    Essai Gratuit
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -108,9 +122,8 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 ${
-          isMobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-        }`}
+        className={`lg:hidden overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
       >
         <div className="bg-white border-t border-gray-100 shadow-xl">
           <div className="max-w-7xl mx-auto px-6 py-6 space-y-2">
@@ -126,13 +139,21 @@ const Header = () => {
             ))}
 
             <div className="pt-4 space-y-3 border-t border-gray-100">
-              <a
-                href="#FinalCTASectionMedical"
-                onClick={(e) => handleSmoothScroll(e, '#FinalCTASectionMedical')}
-                className="block w-full px-4 py-3 text-center bg-sky-600 rounded-xl font-bold text-sm text-white shadow-lg shadow-sky-100 transition-all"
-              >
-                S'inscrire Gratuitement
-              </a>
+              {isAuthenticated() ? (
+                <Link
+                  to="/dashboard"
+                  className="block w-full px-4 py-3 text-center bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-bold text-sm text-white shadow-lg shadow-sky-100 transition-all"
+                >
+                  Tableau de Bord
+                </Link>
+              ) : (
+                <Link
+                  to="/signup"
+                  className="block w-full px-4 py-3 text-center bg-sky-600 rounded-xl font-bold text-sm text-white shadow-lg shadow-sky-100 transition-all"
+                >
+                  S'inscrire Gratuitement
+                </Link>
+              )}
             </div>
           </div>
         </div>
