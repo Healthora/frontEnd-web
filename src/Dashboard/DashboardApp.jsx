@@ -92,14 +92,14 @@ const MedicalDashboard = () => {
                 key={item.id}
                 onClick={() => setActivePage(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 relative group ${isActive
-                    ? "bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-lg shadow-sky-500/30"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-lg shadow-sky-500/30"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
               >
                 <Icon
                   className={`w-5 h-5 flex-shrink-0 ${isActive
-                      ? "text-white"
-                      : "text-gray-500 group-hover:text-sky-500"
+                    ? "text-white"
+                    : "text-gray-500 group-hover:text-sky-500"
                     }`}
                 />
 
@@ -109,8 +109,8 @@ const MedicalDashboard = () => {
                     {item.badge && (
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-bold ${isActive
-                            ? "bg-white/20 text-white"
-                            : "bg-sky-100 text-sky-600"
+                          ? "bg-white/20 text-white"
+                          : "bg-sky-100 text-sky-600"
                           }`}
                       >
                         {item.badge}
@@ -142,7 +142,7 @@ const MedicalDashboard = () => {
                 <p className="text-sm font-bold text-gray-900 truncate">
                   {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Dr. Inconnu'}
                 </p>
-                <p className="text-xs text-gray-500">{user.specialty}</p>
+                <p className="text-xs text-gray-500">{user?.specialty}</p>
               </div>
               <button
                 onClick={handleLogout}
@@ -212,7 +212,7 @@ const MedicalDashboard = () => {
                   <p className="text-sm font-bold text-gray-900">
                     {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Dr. Inconnu'}
                   </p>
-                  <p className="text-xs text-gray-500">{user.specialty}</p>
+                  <p className="text-xs text-gray-500">{user?.specialty}</p>
                 </div>
                 <div className="relative">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
@@ -234,7 +234,7 @@ const MedicalDashboard = () => {
           {activePage == 'appointments' && <Pipeline />}
           {activePage == 'statistics' && <Statisticsdashboard />}
           {activePage == 'patients' && <PatientManagement />}
-          {activePage == 'settings' && <SettingsPage />}
+          {activePage == 'settings' && <SettingsPage onUserUpdate={() => setUser(getCurrentUser())} />}
         </main>
       </div>
     </div>

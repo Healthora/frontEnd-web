@@ -28,7 +28,6 @@ export const isAuthenticated = () => {
 export const getCurrentUser = () => {
     try {
         const user = localStorage.getItem('user');
-        console.log(user)
         return user ? JSON.parse(user) : null;
     } catch (error) {
         return null;

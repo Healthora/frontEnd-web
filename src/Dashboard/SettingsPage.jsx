@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/static-components */
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   User,
   Building2,
@@ -13,23 +13,85 @@ import {
   Smartphone,
   MapPin,
   Clock,
-  Shield
+  Shield,
+  ChevronDown
 } from 'lucide-react';
+import { getCurrentUser, authenticatedFetch, login } from '../utils/auth.js'
 
-const SettingsPage = () => {
-  // Custom Toggle Component
-  const Toggle = ({ enabled, setEnabled }) => (
-    <button
-      onClick={() => setEnabled(!enabled)}
-      className={`${enabled ? 'bg-gradient-to-r from-sky-500 to-indigo-600' : 'bg-slate-200'
-        } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500/20`}
-    >
-      <span
-        className={`${enabled ? 'translate-x-6' : 'translate-x-1'
-          } inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm`}
-      />
-    </button>
-  );
+const SettingsPage = ({ onUserUpdate }) => {
+  const [succesUpdate, setcuccesupdate] = useState(false);
+  const [errorUpdate, setErrorUpdate] = useState('');
+
+  const specialties = [
+    "General Practice",
+    "Internal Medicine",
+    "Cardiology",
+    "Endocrinology & Diabetes",
+    "Gastroenterology",
+    "Nephrology",
+    "Neurology",
+    "Psychiatry",
+    "Pediatrics",
+    "Obstetrics & Gynecology",
+    "Dermatology",
+    "Ophthalmology",
+    "ENT",
+    "Orthopedics",
+    "Rheumatology",
+    "Hematology",
+    "Oncology",
+    "Pulmonology",
+    "Urology",
+    "General Surgery",
+    "Vascular Surgery",
+    "Maxillofacial Surgery",
+    "Pediatric Surgery",
+    "Plastic & Reconstructive Surgery",
+    "Diagnostic Radiology",
+    "Nutrition & Dietetics",
+    "Physiotherapy",
+    "other"
+  ];
+
+  const { email, firstName, lastName, phone, specialty } = getCurrentUser() || {};
+  const [currentDoctor, setCurrentDoctor] = useState({
+    email: email || '',
+    firstName: firstName || '',
+    lastName: lastName || '',
+    phone: phone || '',
+    specialty: specialty || ''
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function handleSendProfilSetting() {
+    try {
+      setIsLoading(true);
+      setErrorUpdate('');
+      const response = await authenticatedFetch('http://127.0.0.1:3000/setting/handleSendProfilSetting', {
+        method: 'PUT',
+        body: JSON.stringify(currentDoctor)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setcuccesupdate(true);
+
+        localStorage.setItem('user', JSON.stringify(data.data));
+        if (onUserUpdate) onUserUpdate(); 
+
+        setTimeout(() => setcuccesupdate(false), 5000);
+      } else {
+        setErrorUpdate(data.message || 'La mise à jour a échoué');
+      }
+    } catch (error) {
+      setErrorUpdate('Erreur de connexion au serveur');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
   return (
     <div className="min-h-screen font-sans text-slate-900">
@@ -41,10 +103,7 @@ const SettingsPage = () => {
 
             <p className="text-slate-500 text-xs hidden md:block">Configuration générale du compte et du cabinet</p>
           </div>
-          <button className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-sky-200 hover:scale-[1.02] transition-all active:scale-95">
-            <Save className="w-4 h-4" />
-            Enregistrer les modifications
-          </button>
+
         </div>
       </div>
 
@@ -58,6 +117,24 @@ const SettingsPage = () => {
             </div>
             <h2 className="font-bold text-lg">Profil de l'utilisateur</h2>
           </div>
+
+          {succesUpdate && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                <ShieldCheck className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-sm font-bold text-emerald-700">Profil mis à jour avec succès !</p>
+            </div>
+          )}
+
+          {errorUpdate && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <Shield className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-sm font-bold text-red-700">{errorUpdate}</p>
+            </div>
+          )}
 
           <div className="flex flex-col md:flex-row gap-10">
             <div className="flex flex-col items-center gap-4">
@@ -73,23 +150,68 @@ const SettingsPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 flex-1">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Nom Complet</label>
-                <input type="text" defaultValue="Dr. Marie Dupont" className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Prenom</label>
+                <input type="text" value={currentDoctor.firstName} onChange={(e) => setCurrentDoctor({ ...currentDoctor, firstName: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Spécialité</label>
-                <input type="text" defaultValue="Cardiologue" className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Nom</label>
+                <input type="text" value={currentDoctor.lastName} onChange={(e) => setCurrentDoctor({ ...currentDoctor, lastName: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
+              </div>
+              <div>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Spécialité <span className="text-sky-500">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    name="specialty"
+                    value={currentDoctor.specialty}
+                    onChange={(e) => setCurrentDoctor({ ...currentDoctor, specialty: e.target.value })}
+                    required
+                    className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Sélectionner...</option>
+                    {specialties.map((spec, index) => (
+                      <option key={index} value={spec}>{spec}</option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Email Pro</label>
-                <input type="email" defaultValue="marie.dupont@clinique.fr" className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
+                <input type="email" value={currentDoctor.email} onChange={(e) => setCurrentDoctor({ ...currentDoctor, email: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Téléphone</label>
-                <input type="text" defaultValue="+33 6 12 34 56 78" className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
+                <input type="text" value={currentDoctor.phone} onChange={(e) => setCurrentDoctor({ ...currentDoctor, phone: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
               </div>
             </div>
           </div>
+          <div className='flex justify-end'>
+            <button
+              className={`flex items-center gap-2 px-6 py-2 rounded-xl font-bold shadow-lg transition-all active:scale-95 ${isLoading
+                ? 'bg-slate-400 cursor-not-allowed opacity-70'
+                : 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-sky-200 hover:scale-[1.02] cursor-pointer'
+                }`}
+              onClick={handleSendProfilSetting}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Mise à jour...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Enregistrer les modifications
+                </>
+              )}
+            </button>
+          </div>
+
         </section>
 
         {/* 2. Clinic Settings */}
@@ -163,7 +285,6 @@ const SettingsPage = () => {
               <p className="text-sm font-bold text-slate-800">Réservation en ligne</p>
               <p className="text-xs text-slate-500">Permettre aux patients de réserver via votre lien public.</p>
             </div>
-            <Toggle enabled={true} setEnabled={() => { }} />
           </div>
         </section>
 
@@ -192,44 +313,10 @@ const SettingsPage = () => {
                     <p className="text-[11px] text-slate-400">{notif.desc}</p>
                   </div>
                 </div>
-                <Toggle enabled={idx !== 1} setEnabled={() => { }} />
               </div>
             ))}
           </div>
         </section>
-
-        {/* 5. Security Settings */}
-        {/* <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 bg-emerald-50 rounded-lg">
-              <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            </div>
-            <h2 className="font-bold text-lg">Sécurité et Accès</h2>
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50/50 flex items-center justify-center text-emerald-600">
-                  <Shield className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-800">Double Authentification (2FA)</p>
-                  <p className="text-[11px] text-slate-400">Protection renforcée par code mobile</p>
-                </div>
-              </div>
-              <Toggle enabled={false} setEnabled={() => {}} />
-            </div>
-            
-            <div className="pt-6 border-t border-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <p className="text-xs text-slate-500 italic">Dernière modification du mot de passe : il y a 3 mois</p>
-              <button className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors">
-                Changer le mot de passe
-              </button>
-            </div>
-          </div>
-        </section> */}
-
       </div>
     </div>
   );
