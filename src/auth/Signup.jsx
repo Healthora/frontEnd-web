@@ -55,7 +55,7 @@ const Signup = () => {
         phone: '',
         password: '',
         confirmPassword: '',
-        role: 'patient',
+        role: '',
         specialty: ''
     });
     const [showPassword, setShowPassword] = useState(false);
@@ -107,7 +107,7 @@ const Signup = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3000/auth/signup', {
+            const response = await fetch('http://127.0.0.1:3000/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,11 +126,9 @@ const Signup = () => {
             const data = await response.json();
 
             if (data.success) {
-                // Store token in localStorage
                 localStorage.setItem('token', data.data.token);
                 localStorage.setItem('user', JSON.stringify(data.data));
 
-                // Redirect to dashboard
                 navigate('/dashboard');
             } else {
                 setError(data.message || 'Erreur lors de la création du compte');

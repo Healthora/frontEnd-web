@@ -26,7 +26,7 @@ const Signin = () => {
             ...formData,
             [e.target.name]: e.target.value
         });
-        setError(''); // Clear error when user types
+        setError('');
     };
 
     const handleSubmit = async (e) => {
@@ -35,7 +35,7 @@ const Signin = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3000/auth/signin', {
+            const response = await fetch('http://127.0.0.1:3000/auth/signin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -46,11 +46,10 @@ const Signin = () => {
             const data = await response.json();
 
             if (data.success) {
-                // Store token in localStorage
                 localStorage.setItem('token', data.data.token);
+                //JSON.stringify(data.data) (data of doctor)
                 localStorage.setItem('user', JSON.stringify(data.data));
 
-                // Redirect to dashboard
                 navigate('/dashboard');
             } else {
                 setError(data.message || 'Erreur lors de la connexion');

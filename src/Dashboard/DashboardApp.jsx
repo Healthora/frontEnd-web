@@ -142,11 +142,11 @@ const MedicalDashboard = () => {
                 <p className="text-sm font-bold text-gray-900 truncate">
                   {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Dr. Inconnu'}
                 </p>
-                <p className="text-xs text-gray-500">Médecin</p>
+                <p className="text-xs text-gray-500">{user.specialty}</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="p-1.5 hover:bg-white rounded-lg transition-colors"
+                className="p-1.5 hover:bg-red-300 rounded-lg transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4 text-gray-500" />
               </button>
@@ -212,7 +212,7 @@ const MedicalDashboard = () => {
                   <p className="text-sm font-bold text-gray-900">
                     {user ? `Dr. ${user.firstName} ${user.lastName}` : 'Dr. Inconnu'}
                   </p>
-                  <p className="text-xs text-gray-500">Médecin</p>
+                  <p className="text-xs text-gray-500">{user.specialty}</p>
                 </div>
                 <div className="relative">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
