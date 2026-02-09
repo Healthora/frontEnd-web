@@ -97,7 +97,7 @@ const SettingsPage = ({ onUserUpdate }) => {
     <div className="min-h-screen font-sans text-slate-900">
       {/* --- STICKY TOP BAR --- */}
       <div className="sticky top-0 z-10 backdrop-blur-md border-b border-slate-100 mb-8">
-        
+
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-black text-gray-900 mb-2">Paramètres</h1>
