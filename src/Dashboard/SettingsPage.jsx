@@ -79,9 +79,9 @@ const SettingsPage = ({ onUserUpdate }) => {
         setcuccesupdate(true);
 
         localStorage.setItem('user', JSON.stringify(data.data));
-        if (onUserUpdate) onUserUpdate(); 
+        if (onUserUpdate) onUserUpdate();
 
-        setTimeout(() => setcuccesupdate(false), 5000);
+        setTimeout(() => setcuccesupdate(false), 10000);
       } else {
         setErrorUpdate(data.message || 'La mise à jour a échoué');
       }
@@ -97,14 +97,14 @@ const SettingsPage = ({ onUserUpdate }) => {
     <div className="min-h-screen font-sans text-slate-900">
       {/* --- STICKY TOP BAR --- */}
       <div className="sticky top-0 z-10 backdrop-blur-md border-b border-slate-100 mb-8">
-        <div className=" mx-auto flex justify-between ">
+        
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-black text-gray-900 mb-2">Paramètres</h1>
-
-            <p className="text-slate-500 text-xs hidden md:block">Configuration générale du compte et du cabinet</p>
+            <p className="text-gray-500">Configuration générale du compte et du cabinet</p>
           </div>
-
         </div>
+
       </div>
 
       <div className="max-w-4xl mx-auto px-4 space-y-6">
