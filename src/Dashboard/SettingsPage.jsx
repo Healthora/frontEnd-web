@@ -16,81 +16,34 @@ import {
   Shield,
   ChevronDown
 } from 'lucide-react';
-import { getCurrentUser, authenticatedFetch, login } from '../utils/auth.js'
+import { useDoctor } from '../hooks/useDoctor.js';
 
 const SettingsPage = ({ onUserUpdate }) => {
-  const [succesUpdate, setcuccesupdate] = useState(false);
-  const [errorUpdate, setErrorUpdate] = useState('');
+  const {
+    doctor: currentDoctor,
+    isLoading,
+    error: errorUpdate,
+    success: succesUpdate,
+    actions
+  } = useDoctor(onUserUpdate);
 
   const specialties = [
-    "General Practice",
-    "Internal Medicine",
-    "Cardiology",
-    "Endocrinology & Diabetes",
-    "Gastroenterology",
-    "Nephrology",
-    "Neurology",
-    "Psychiatry",
-    "Pediatrics",
-    "Obstetrics & Gynecology",
-    "Dermatology",
-    "Ophthalmology",
-    "ENT",
-    "Orthopedics",
-    "Rheumatology",
-    "Hematology",
-    "Oncology",
-    "Pulmonology",
-    "Urology",
-    "General Surgery",
-    "Vascular Surgery",
-    "Maxillofacial Surgery",
-    "Pediatric Surgery",
-    "Plastic & Reconstructive Surgery",
-    "Diagnostic Radiology",
-    "Nutrition & Dietetics",
-    "Physiotherapy",
-    "other"
+    "General Practice", "Internal Medicine", "Cardiology", "Endocrinology & Diabetes",
+    "Gastroenterology", "Nephrology", "Neurology", "Psychiatry", "Pediatrics",
+    "Obstetrics & Gynecology", "Dermatology", "Ophthalmology", "ENT", "Orthopedics",
+    "Rheumatology", "Hematology", "Oncology", "Pulmonology", "Urology",
+    "General Surgery", "Vascular Surgery", "Maxillofacial Surgery", "Pediatric Surgery",
+    "Plastic & Reconstructive Surgery", "Diagnostic Radiology", "Nutrition & Dietetics",
+    "Physiotherapy", "other"
   ];
 
-  const { email, firstName, lastName, phone, specialty } = getCurrentUser() || {};
-  const [currentDoctor, setCurrentDoctor] = useState({
-    email: email || '',
-    firstName: firstName || '',
-    lastName: lastName || '',
-    phone: phone || '',
-    specialty: specialty || ''
-  });
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function handleSendProfilSetting() {
+  const handleSendProfilSetting = async () => {
     try {
-      setIsLoading(true);
-      setErrorUpdate('');
-      const response = await authenticatedFetch('http://127.0.0.1:3000/setting/handleSendProfilSetting', {
-        method: 'PUT',
-        body: JSON.stringify(currentDoctor)
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setcuccesupdate(true);
-
-        localStorage.setItem('user', JSON.stringify(data.data));
-        if (onUserUpdate) onUserUpdate();
-
-        setTimeout(() => setcuccesupdate(false), 10000);
-      } else {
-        setErrorUpdate(data.message || 'La mise à jour a échoué');
-      }
+      await actions.updateProfile(currentDoctor);
     } catch (error) {
-      setErrorUpdate('Erreur de connexion au serveur');
-    } finally {
-      setIsLoading(false);
+      // Error is handled by the hook
     }
-  }
+  };
 
 
   return (
@@ -139,7 +92,7 @@ const SettingsPage = ({ onUserUpdate }) => {
           <div className="flex flex-col md:flex-row gap-10">
             <div className="flex flex-col items-center gap-4">
               <div className="relative">
-                <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-sky-50 to-slate-100 border-2 border-white shadow-inner flex items-center justify-center overflow-hidden">
+                <div className="w-28 h-28 rounded-3xl bg-linear-to-br from-sky-50 to-slate-100 border-2 border-white shadow-inner flex items-center justify-center overflow-hidden">
                   <span className="text-sky-600 font-black text-2xl">DR</span>
                 </div>
                 <button className="absolute -bottom-2 -right-2 p-2.5 bg-white rounded-xl shadow-lg border border-slate-100 text-sky-600 hover:bg-sky-50 transition-colors">
@@ -151,11 +104,11 @@ const SettingsPage = ({ onUserUpdate }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 flex-1">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Prenom</label>
-                <input type="text" value={currentDoctor.firstName} onChange={(e) => setCurrentDoctor({ ...currentDoctor, firstName: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
+                <input type="text" name="firstName" value={currentDoctor.firstName} onChange={actions.handleInputChange} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Nom</label>
-                <input type="text" value={currentDoctor.lastName} onChange={(e) => setCurrentDoctor({ ...currentDoctor, lastName: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
+                <input type="text" name="lastName" value={currentDoctor.lastName} onChange={actions.handleInputChange} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all" />
               </div>
               <div>
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
@@ -165,7 +118,7 @@ const SettingsPage = ({ onUserUpdate }) => {
                   <select
                     name="specialty"
                     value={currentDoctor.specialty}
-                    onChange={(e) => setCurrentDoctor({ ...currentDoctor, specialty: e.target.value })}
+                    onChange={actions.handleInputChange}
                     required
                     className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all appearance-none cursor-pointer"
                   >
@@ -181,11 +134,11 @@ const SettingsPage = ({ onUserUpdate }) => {
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Email Pro</label>
-                <input type="email" value={currentDoctor.email} onChange={(e) => setCurrentDoctor({ ...currentDoctor, email: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
+                <input type="email" name="email" value={currentDoctor.email} onChange={actions.handleInputChange} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Téléphone</label>
-                <input type="text" value={currentDoctor.phone} onChange={(e) => setCurrentDoctor({ ...currentDoctor, phone: e.target.value })} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
+                <input type="text" name="phone" value={currentDoctor.phone} onChange={actions.handleInputChange} className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
               </div>
             </div>
           </div>
@@ -193,7 +146,7 @@ const SettingsPage = ({ onUserUpdate }) => {
             <button
               className={`flex items-center gap-2 px-6 py-2 rounded-xl font-bold shadow-lg transition-all active:scale-95 ${isLoading
                 ? 'bg-slate-400 cursor-not-allowed opacity-70'
-                : 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-sky-200 hover:scale-[1.02] cursor-pointer'
+                : 'bg-linear-to-r from-sky-600 to-indigo-600 text-white shadow-sky-200 hover:scale-[1.02] cursor-pointer'
                 }`}
               onClick={handleSendProfilSetting}
               disabled={isLoading}
@@ -280,7 +233,7 @@ const SettingsPage = ({ onUserUpdate }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-5 bg-gradient-to-r from-sky-50/50 to-indigo-50/30 rounded-2xl border border-sky-100/50">
+          <div className="flex items-center justify-between p-5 bg-linear-to-r from-sky-50/50 to-indigo-50/30 rounded-2xl border border-sky-100/50">
             <div>
               <p className="text-sm font-bold text-slate-800">Réservation en ligne</p>
               <p className="text-xs text-slate-500">Permettre aux patients de réserver via votre lien public.</p>

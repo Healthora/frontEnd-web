@@ -46,6 +46,9 @@ const specialties = [
     "other"
 ];
 
+import { doctorService } from '../services/doctorService.js';
+import { login } from '../utils/auth.js';
+
 const Signup = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -107,34 +110,20 @@ const Signup = () => {
         setError('');
 
         try {
-            const response = await fetch('http://127.0.0.1:3000/auth/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: formData.email,
-                    password: formData.password,
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    phone: formData.phone,
-                    role: formData.role,
-                    specialty: formData.specialty
-                }),
+            const data = await doctorService.signUp({
+                email: formData.email,
+                password: formData.password,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                phone: formData.phone,
+                role: formData.role,
+                specialty: formData.specialty
             });
 
-            const data = await response.json();
-
-            if (data.success) {
-                localStorage.setItem('token', data.data.token);
-                localStorage.setItem('user', JSON.stringify(data.data));
-
-                navigate('/dashboard');
-            } else {
-                setError(data.message || 'Erreur lors de la création du compte');
-            }
+            login(data.data.token, data.data);
+            navigate('/dashboard');
         } catch (err) {
-            setError('Erreur de connexion au serveur');
+            setError(err.message || 'Erreur lors de la création du compte');
             console.error('Signup error:', err);
         } finally {
             setLoading(false);
@@ -142,22 +131,22 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-indigo-50 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-linear-to-br from-sky-50 via-white to-indigo-50 flex items-center justify-center p-6">
             {/* Background pattern */}
             <div className="absolute inset-0 opacity-[0.02]" style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000000' fill-rule='evenodd'/%3E%3C/svg%3E")`
             }}></div>
 
             {/* Decorative blurs */}
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-sky-200/40 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-indigo-200/40 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-linear-to-br from-sky-200/40 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-linear-to-tr from-indigo-200/40 to-transparent rounded-full blur-3xl"></div>
 
             <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center relative z-10">
                 {/* Left Column - Branding */}
                 <div className="hidden lg:flex flex-col gap-8">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-sky-200">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-sky-500 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-sky-200">
                             <Calendar className="text-white w-7 h-7" />
                         </div>
                         <span className="font-bold text-2xl tracking-tight text-gray-900">
@@ -168,7 +157,7 @@ const Signup = () => {
                     <div className="space-y-6">
                         <h1 className="text-5xl font-black text-gray-900 leading-tight">
                             Rejoignez des milliers de
-                            <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent"> professionnels de santé</span>
+                            <span className="bg-linear-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent"> professionnels de santé</span>
                         </h1>
                         <p className="text-xl text-gray-600 leading-relaxed">
                             Créez votre compte et commencez à gérer vos rendez-vous efficacement.
@@ -212,7 +201,7 @@ const Signup = () => {
                     <div className="bg-white rounded-3xl border border-gray-200 shadow-2xl p-8 lg:p-10">
                         {/* Mobile Logo */}
                         <Link to="/" className="lg:hidden flex items-center gap-2 group mb-8">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-sky-500 to-indigo-600 flex items-center justify-center">
                                 <Calendar className="text-white w-6 h-6" />
                             </div>
                             <span className="font-bold text-xl tracking-tight text-gray-900">
@@ -232,7 +221,7 @@ const Signup = () => {
                         {/* Error Message */}
                         {error && (
                             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-                                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                                 <p className="text-sm text-red-800">{error}</p>
                             </div>
                         )}
@@ -403,7 +392,7 @@ const Signup = () => {
                                     {loading ? 'Création du compte...' : 'Créer mon compte'}
                                     {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
                                 </span>
-                                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                                <div className="absolute inset-0 rounded-xl bg-linear-to-r from-sky-400 to-indigo-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
                             </button>
                         </form>
 

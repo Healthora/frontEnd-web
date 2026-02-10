@@ -3,7 +3,7 @@ import App from './App';
 import Dashboard from "./Dashboard/DashboardApp";
 import Signin from "./auth/Signin";
 import Signup from "./auth/Signup";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
     { path: '/', element: <App /> },
