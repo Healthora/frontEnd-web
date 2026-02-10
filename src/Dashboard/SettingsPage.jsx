@@ -14,9 +14,11 @@ import {
   MapPin,
   Clock,
   Shield,
-  ChevronDown
+  ChevronDown,
+  CheckCircle
 } from 'lucide-react';
 import { useDoctor } from '../hooks/useDoctor.js';
+import Toast from '../components/Toast';
 
 const SettingsPage = ({ onUserUpdate }) => {
   const {
@@ -37,11 +39,32 @@ const SettingsPage = ({ onUserUpdate }) => {
     "Physiotherapy", "other"
   ];
 
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
   const handleSendProfilSetting = async () => {
     try {
       await actions.updateProfile(currentDoctor);
+      showToast('Profil mis à jour avec succès');
     } catch (error) {
-      // Error is handled by the hook
+      showToast(error.message || 'La mise à jour a échoué', 'error');
+    }
+  };
+
+  const handleSendCabinetSetting = async () => {
+    try {
+      await actions.updateCabinet({
+        cabinetName: currentDoctor.cabinetName,
+        cabinetAddress: currentDoctor.cabinetAddress,
+        schedule: currentDoctor.schedule
+      });
+      showToast('Informations du cabinet enregistrées');
+    } catch (error) {
+      showToast(error.message || 'Erreur lors de la sauvegarde du cabinet', 'error');
     }
   };
 
@@ -60,7 +83,7 @@ const SettingsPage = ({ onUserUpdate }) => {
 
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 space-y-6 pb-20">
 
         {/* 1. Profile Settings */}
         <section className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
@@ -70,24 +93,6 @@ const SettingsPage = ({ onUserUpdate }) => {
             </div>
             <h2 className="font-bold text-lg">Profil de l'utilisateur</h2>
           </div>
-
-          {succesUpdate && (
-            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
-                <ShieldCheck className="w-4 h-4 text-white" />
-              </div>
-              <p className="text-sm font-bold text-emerald-700">Profil mis à jour avec succès !</p>
-            </div>
-          )}
-
-          {errorUpdate && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                <Shield className="w-4 h-4 text-white" />
-              </div>
-              <p className="text-sm font-bold text-red-700">{errorUpdate}</p>
-            </div>
-          )}
 
           <div className="flex flex-col md:flex-row gap-10">
             <div className="flex flex-col items-center gap-4">
@@ -142,7 +147,7 @@ const SettingsPage = ({ onUserUpdate }) => {
               </div>
             </div>
           </div>
-          <div className='flex justify-end'>
+          <div className='flex justify-end mt-6'>
             <button
               className={`flex items-center gap-2 px-6 py-2 rounded-xl font-bold shadow-lg transition-all active:scale-95 ${isLoading
                 ? 'bg-slate-400 cursor-not-allowed opacity-70'
@@ -180,24 +185,127 @@ const SettingsPage = ({ onUserUpdate }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Nom du Cabinet</label>
-                <input type="text" defaultValue="Centre Médical Étoile" className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
+                <input
+                  type="text"
+                  name="cabinetName"
+                  value={currentDoctor.cabinetName}
+                  onChange={actions.handleInputChange}
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500"
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1"><MapPin className="w-3 h-3" /> Adresse</label>
-                <input type="text" defaultValue="12 Rue de la Paix, 75002 Paris" className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none" />
+                <input
+                  type="text"
+                  name="cabinetAddress"
+                  value={currentDoctor.cabinetAddress}
+                  onChange={actions.handleInputChange}
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-sky-500/10 focus:border-sky-500"
+                />
               </div>
             </div>
 
-            <div className="space-y-3">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1"><Clock className="w-3 h-3" /> Horaires d'ouverture</label>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'].map(day => (
-                  <div key={day} className="p-3 border border-slate-100 bg-slate-50/30 rounded-xl text-center hover:border-sky-200 transition-colors">
-                    <span className="text-xs font-bold text-slate-700">{day}</span>
-                    <p className="text-[10px] text-sky-600 font-medium mt-1">09:00 - 18:00</p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                  <Clock className="w-3.5 h-3.5 text-sky-500" />
+                  Horaires d'ouverture par jour
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <span className="text-[10px] text-slate-500 font-medium">Ouvert</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2">
+                {[
+                  { key: 'monday', label: 'Lundi' },
+                  { key: 'tuesday', label: 'Mardi' },
+                  { key: 'wednesday', label: 'Mercredi' },
+                  { key: 'thursday', label: 'Jeudi' },
+                  { key: 'friday', label: 'Vendredi' },
+                  { key: 'saturday', label: 'Samedi' },
+                  { key: 'sunday', label: 'Dimanche' }
+                ].map(day => (
+                  <div
+                    key={day.key}
+                    className={`group flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 ${currentDoctor.schedule?.[day.key]?.isOpen
+                      ? 'bg-white border-slate-100 shadow-xs hover:shadow-md hover:border-sky-100'
+                      : 'bg-slate-50/50 border-transparent opacity-60'
+                      }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Day Label & Status */}
+                      <div className="w-24">
+                        <p className={`font-bold text-sm ${currentDoctor.schedule?.[day.key]?.isOpen ? 'text-slate-800' : 'text-slate-400'}`}>
+                          {day.label}
+                        </p>
+                        <p className={`text-[10px] font-medium ${currentDoctor.schedule?.[day.key]?.isOpen ? 'text-emerald-600' : 'text-slate-400'}`}>
+                          {currentDoctor.schedule?.[day.key]?.isOpen ? 'Jour de travail' : 'Repos'}
+                        </p>
+                      </div>
+
+                      {/* Status Toggle Button */}
+                      <button
+                        type="button"
+                        onClick={() => actions.handleScheduleChange(day.key, 'isOpen', !currentDoctor.schedule?.[day.key]?.isOpen)}
+                        className={`w-11 h-6 rounded-full relative transition-all duration-300 flex items-center px-1 ${currentDoctor.schedule?.[day.key]?.isOpen ? 'bg-sky-500' : 'bg-slate-200'
+                          }`}
+                      >
+                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm ${currentDoctor.schedule?.[day.key]?.isOpen ? 'translate-x-5' : 'translate-x-0'
+                          }`} />
+                      </button>
+                    </div>
+
+                    {/* Time Inputs */}
+                    {currentDoctor.schedule?.[day.key]?.isOpen ? (
+                      <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-xl">
+                          <Clock className="w-3 h-3 text-slate-400" />
+                          <input
+                            type="time"
+                            value={currentDoctor.schedule[day.key].start}
+                            onChange={(e) => actions.handleScheduleChange(day.key, 'start', e.target.value)}
+                            className="bg-transparent text-xs font-bold text-slate-700 outline-none w-14"
+                          />
+                        </div>
+                        <div className="w-4 h-px bg-slate-200"></div>
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-xl">
+                          <input
+                            type="time"
+                            value={currentDoctor.schedule[day.key].end}
+                            onChange={(e) => actions.handleScheduleChange(day.key, 'end', e.target.value)}
+                            className="bg-transparent text-xs font-bold text-slate-700 outline-none w-14"
+                          />
+                          <Clock className="w-3 h-3 text-slate-400" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-slate-400 italic text-xs px-4 py-2 bg-slate-100/50 rounded-xl">
+                        Cabinet fermé
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className='flex justify-end mt-4'>
+              <button
+                className={`flex items-center gap-2 px-6 py-2 rounded-xl font-bold shadow-lg transition-all active:scale-95 ${isLoading
+                  ? 'bg-slate-400 cursor-not-allowed opacity-70'
+                  : 'bg-linear-to-r from-indigo-600 to-sky-600 text-white shadow-indigo-200 hover:scale-[1.02] cursor-pointer'
+                  }`}
+                onClick={handleSendCabinetSetting}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Enregistrer le cabinet
+              </button>
             </div>
           </div>
         </section>
@@ -271,6 +379,14 @@ const SettingsPage = ({ onUserUpdate }) => {
           </div>
         </section>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

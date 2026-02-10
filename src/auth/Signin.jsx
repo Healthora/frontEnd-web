@@ -197,7 +197,7 @@ const Signin = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="group relative w-full px-6 py-4 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-xl font-bold text-white shadow-xl shadow-sky-200 hover:shadow-sky-300 hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="group relative w-full px-6 py-4 bg-linear-to-r from-sky-500 to-indigo-600 rounded-xl font-bold text-white shadow-xl shadow-sky-200 hover:shadow-sky-300 hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                     {loading ? 'Connexion...' : 'Se connecter'}

@@ -3,12 +3,26 @@ import { authenticatedFetch } from '../utils/auth';
 const API_URL = 'http://127.0.0.1:3000';
 
 export const doctorService = {
-    
+
     updateProfile: async (doctorData) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/setting/handleSendProfilSetting`, {
                 method: 'PUT',
                 body: JSON.stringify(doctorData)
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+            return data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    updateCabinet: async (cabinetData) => {
+        try {
+            const res = await authenticatedFetch(`${API_URL}/setting/handleCabinetSetting`, {
+                method: 'PUT',
+                body: JSON.stringify(cabinetData)
             });
             const data = await res.json();
             if (!data.success) throw new Error(data.message);
