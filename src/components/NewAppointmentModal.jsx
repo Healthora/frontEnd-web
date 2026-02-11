@@ -30,9 +30,11 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
     // Initialize form when appointment prop changes
     useEffect(() => {
         if (appointment && isOpen) {
+            // Fix: parse date without TZ shift
+            const cleanDate = appointment.appointment_date ? appointment.appointment_date.split('T')[0] : '';
             setFormData({
                 patientId: appointment.patient_id,
-                date: appointment.appointment_date ? new Date(appointment.appointment_date).toISOString().split('T')[0] : '',
+                date: cleanDate,
                 type: appointment.visit_type || 'consultation',
                 status: appointment.status || 'nouveau',
                 notes: appointment.notes || ''
@@ -50,7 +52,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
             // Reset if opening in "new" mode
             setFormData({
                 patientId: '',
-                date: '',
+                date: new Date().toISOString().split('T')[0],
                 type: 'consultation',
                 status: defaultStatus || 'nouveau',
                 notes: ''
@@ -250,7 +252,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                     required
                                     value={formData.date}
                                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
+                                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all font-medium"
                                 />
                             </div>
                         </div>
@@ -323,7 +325,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-sky-500/30 hover:scale-[1.02] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="flex-1 px-6 py-3 bg-linear-to-r from-sky-500 to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-sky-500/30 hover:scale-[1.02] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? (appointment ? 'Modification...' : 'Création...') : (appointment ? 'Modifier' : 'Créer le rendez-vous')}
                             </button>

@@ -1,13 +1,14 @@
 // pages/PatientManagement.jsx
 import { useState } from 'react';
 import {
-  Search, UserPlus, RefreshCw, Users, Activity, X, Trash2, Edit, Phone, Mail, TrendingUp
+  Search, UserPlus, RefreshCw, Users, Activity, X, Trash2, Edit, Phone, Mail, TrendingUp, Calendar
 } from 'lucide-react';
 import { getCurrentUser } from '../utils/auth';
 import { usePatients } from '../hooks/usePatients';
 import CreatePatientModal from '../components/CreatePatientModel.jsx';
 import EditPatientPanel from '../components/EditPatientPanel';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import PatientHistoryModal from '../components/PatientHistoryModal';
 import Toast from '../components/Toast';
 
 const PatientManagement = () => {
@@ -19,6 +20,7 @@ const PatientManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
   const [deletingPatient, setDeletingPatient] = useState(null);
+  const [historyPatient, setHistoryPatient] = useState(null);
   const [toast, setToast] = useState(null);
 
 
@@ -72,10 +74,10 @@ const PatientManagement = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatCard label="Total" value={stats.total} icon={Users} color="sky" />
-          <StatCard label="Actifs" value={stats.active} icon={Activity} color="emerald" />
-          <StatCard label="Nouveaux" value={stats.newThisMonth} icon={UserPlus} color="indigo" />
-          <StatCard label="Inactifs" value={stats.inactive} icon={X} color="slate" />
+          <StatCard label="Total Patients" value={stats.total} icon={Users} color="sky" />
+          <StatCard label="À venir" value={stats.upcoming} icon={Calendar} color="indigo" />
+          <StatCard label="Visites Passées" value={stats.past} icon={Activity} color="emerald" />
+          <StatCard label="NRP / Reportés" value={stats.nrp} icon={RefreshCw} color="orange" />
         </div>
 
         {/* Filters */}
@@ -146,9 +148,12 @@ const PatientManagement = () => {
                   {patients.map(patient => (
                     <tr key={patient.id} className="hover:bg-sky-50/30 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-xs">{patient.initials}</div>
-                          <span className="font-bold text-slate-900 text-sm">{patient.name}</span>
+                        <div
+                          className="flex items-center gap-3 cursor-pointer group"
+                          onClick={() => setHistoryPatient(patient)}
+                        >
+                          <div className="w-10 h-10 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-xs group-hover:bg-sky-200 transition-colors">{patient.initials}</div>
+                          <span className="font-bold text-slate-900 text-sm group-hover:text-sky-600 transition-colors">{patient.name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -198,6 +203,12 @@ const PatientManagement = () => {
             onConfirm={handleDelete}
           />
         )}
+
+        <PatientHistoryModal
+          isOpen={!!historyPatient}
+          patient={historyPatient}
+          onClose={() => setHistoryPatient(null)}
+        />
 
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       </div>

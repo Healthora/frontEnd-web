@@ -25,7 +25,6 @@ const Pipeline = () => {
   const [defaultStatus, setDefaultStatus] = useState('nouveau');
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
-  // Pipeline columns configuration based on User Statuses
   const columns = [
     {
       id: 'nouveau',

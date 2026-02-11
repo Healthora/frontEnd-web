@@ -11,11 +11,14 @@ const mapPatientDTO = (p) => ({
     lastName: p.last_name || '',
     phone: p.phone || 'Non renseigné',
     email: p.email || 'Non renseigné',
-    birthDate: p.birth_date ? p.birth_date.split('T')[0] : '', // Format YYYY-MM-DD
+    birthDate: p.birth_date ? (typeof p.birth_date === 'string' ? p.birth_date.split('T')[0] : new Date(p.birth_date).toISOString().split('T')[0]) : '', // Format YYYY-MM-DD
     gender: p.gender || 'M',
-    lastVisit: p.last_visit ? new Date(p.last_visit).toLocaleDateString('fr-FR') : 'Aucune',
-    nextVisit: p.next_visit ? new Date(p.next_visit).toLocaleDateString('fr-FR') : 'None',
+    lastVisit: p.last_visit ? new Date(p.last_visit).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : 'Aucune',
+    nextVisit: p.next_visit ? new Date(p.next_visit).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : 'Aucun',
     status: p.status || 'active',
+    nrpCount: p.nrp_count || 0,
+    totalPast: p.total_past || 0,
+    totalFuture: p.total_future || 0,
     createdAt: p.created_at,
     initials: `${p.first_name?.[0] || ''}${p.last_name?.[0] || ''}`.toUpperCase() || '??',
 });

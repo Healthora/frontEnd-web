@@ -31,6 +31,19 @@ export const appointmentService = {
         }
     },
 
+    getByPatientId: async (patientId) => {
+        try {
+            const res = await authenticatedFetch(`${API_URL}/appointments/patient/${patientId}`, {
+                method: 'GET'
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+            return data.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     update: async (id, appointmentData) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/appointments/${id}`, {

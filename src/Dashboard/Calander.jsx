@@ -3,7 +3,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar as CalendarIcon,
-  Clock,
   User,
   MoreVertical,
   Plus,
@@ -37,13 +36,16 @@ const Calendar = () => {
 
       // Transform data for calendar
       const formatted = data.map(app => {
+        // Fix: Parse YYYY-MM-DD manually to avoid timezone shift
+        const [year, month, day] = app.appointment_date.split('-').map(Number);
+        const dateObj = new Date(year, month - 1, day);
+
         return {
           id: app.id,
           patientName: `${app.patient_first_name} ${app.patient_last_name}`,
-          time: app.time || '00:00',
           type: app.visit_type === 'follow_up' ? 'Suivi' : 'Consultation',
           status: app.status,
-          date: new Date(app.appointment_date), // Ensure Date object
+          date: dateObj,
           original: app,
           phone: app.patient_phone
         };
@@ -171,20 +173,6 @@ const Calendar = () => {
       dot: 'bg-orange-500',
       hover: 'hover:border-orange-300 hover:shadow-orange-200/50'
     },
-    pending: {
-      bg: 'bg-sky-50',
-      border: 'border-sky-200',
-      text: 'text-sky-700',
-      dot: 'bg-sky-500',
-      hover: 'hover:border-sky-300 hover:shadow-sky-200/50'
-    },
-    cancelled: {
-      bg: 'bg-gray-50',
-      border: 'border-gray-200',
-      text: 'text-gray-500',
-      dot: 'bg-gray-400',
-      hover: 'hover:border-gray-300 hover:shadow-gray-200/50'
-    },
     absent: {
       bg: 'bg-red-50',
       border: 'border-red-200',
@@ -198,6 +186,13 @@ const Calendar = () => {
       text: 'text-blue-700',
       dot: 'bg-blue-500',
       hover: 'hover:border-blue-300 hover:shadow-blue-200/50'
+    },
+    suivi: {
+      bg: 'bg-sky-50',
+      border: 'border-sky-200',
+      text: 'text-sky-700',
+      dot: 'bg-sky-500',
+      hover: 'hover:border-sky-300 hover:shadow-sky-200/50'
     },
     termine: {
       bg: 'bg-emerald-50',
@@ -223,7 +218,7 @@ const Calendar = () => {
         <div
           onClick={(e) => { e.stopPropagation(); handleEditAppointment(appointment); }}
           className={`cursor-pointer ${colors.bg} border-l-2 ${colors.border} p-1 mb-1 rounded-sm text-[10px] truncate hover:scale-105 transition-transform`}
-          title={`${appointment.time} - ${appointment.patientName}`}
+          title={`${appointment.patientName}`}
         >
           {appointment.patientName}
         </div>
@@ -257,7 +252,7 @@ const Calendar = () => {
             </div>
             <button
               onClick={() => setIsNewAppointmentModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all"
+              className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-sky-500 to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all"
             >
               <Plus className="w-5 h-5" />
               Nouveau RDV
@@ -312,7 +307,7 @@ const Calendar = () => {
                 >
                   <ChevronLeft className="w-5 h-5 text-gray-600" />
                 </button>
-                <div className="px-4 py-2 bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-100 rounded-xl min-w-[200px] text-center">
+                <div className="px-4 py-2 bg-linear-to-r from-sky-50 to-indigo-50 border border-sky-100 rounded-xl min-w-[200px] text-center">
                   <p className="text-sm font-bold text-gray-900 capitalize">
                     {view === 'day'
                       ? selectedDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })

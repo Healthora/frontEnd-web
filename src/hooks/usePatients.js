@@ -6,7 +6,7 @@ export const usePatients = (doctorId) => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -26,14 +26,14 @@ export const usePatients = (doctorId) => {
     }
   }, [doctorId]);
 
-  
+
   useEffect(() => {
     fetchPatients();
   }, [fetchPatients]);
 
   const deletePatient = async (id) => {
     await patientService.delete(id);
-    setPatients(prev => prev.filter(p => p.id !== id)); 
+    setPatients(prev => prev.filter(p => p.id !== id));
   };
 
   const updatePatient = async (id, data) => {
@@ -44,10 +44,10 @@ export const usePatients = (doctorId) => {
   const filteredPatients = useMemo(() => {
     let result = patients;
     if (searchTerm) {
-      const t = searchTerm.toLowerCase();
-      result = result.filter(p => 
-        p.name.toLowerCase().includes(t) || 
-        p.phone.toLowerCase().includes(t) || 
+      const t = searchTerm.toLowerCase().replace(/\s/g, '');
+      result = result.filter(p =>
+        p.name.toLowerCase().replace(/\s/g, '').includes(t) ||
+        p.phone.replace(/[\s\.-]/g, '').includes(t) ||
         p.email.toLowerCase().includes(t)
       );
     }
@@ -58,19 +58,17 @@ export const usePatients = (doctorId) => {
   }, [patients, searchTerm, statusFilter]);
 
   const stats = useMemo(() => {
-    const now = new Date();
-    const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
     return {
       total: patients.length,
-      active: patients.filter(p => p.status === 'active').length,
-      inactive: patients.filter(p => p.status === 'inactive').length,
-      newThisMonth: patients.filter(p => new Date(p.createdAt) > oneMonthAgo).length,
+      upcoming: patients.reduce((sum, p) => sum + (p.totalPast || 0), 0), // "a venit" -> before today
+      past: patients.reduce((sum, p) => sum + (p.totalFuture || 0), 0),   // "visit pass" -> after today
+      nrp: patients.reduce((sum, p) => sum + (p.nrpCount || 0), 0),
     };
   }, [patients]);
 
   return {
     patients: filteredPatients,
-    rawPatients: patients, 
+    rawPatients: patients,
     loading,
     error,
     stats,
