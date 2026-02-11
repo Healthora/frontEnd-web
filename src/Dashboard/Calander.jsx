@@ -15,6 +15,8 @@ import { useDoctor } from '../hooks/useDoctor';
 import { appointmentService } from '../services/appointmentService';
 import NewAppointmentModal from '../components/NewAppointmentModal';
 
+import Toast from '../components/Toast';
+
 const Calendar = () => {
   const [view, setView] = useState('week');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -24,6 +26,7 @@ const Calendar = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
   // Fetch appointments
   const fetchAppointments = async () => {
@@ -267,13 +270,22 @@ const Calendar = () => {
               setIsNewAppointmentModalOpen(false);
               setSelectedAppointment(null);
             }}
-            onSuccess={() => {
+            onSuccess={(message) => {
               fetchAppointments();
               setIsNewAppointmentModalOpen(false);
               setSelectedAppointment(null);
+              setToast({ show: true, message: message || 'Opération réussie', type: 'success' });
             }}
             appointment={selectedAppointment}
           />
+
+          {toast.show && (
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast({ ...toast, show: false })}
+            />
+          )}
 
           {/* Toolbar */}
           <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">

@@ -1,20 +1,20 @@
 import React from 'react';
 import { AlertTriangle, Loader2, Trash2 } from 'lucide-react';
 
-const DeleteConfirmModal = ({ patient, onClose, onConfirm, loading }) => (
+const DeleteConfirmModal = ({ itemName, title = "Supprimer l'élément ?", message = "Vous êtes sur le point de supprimer", warning = "Toutes les données associées seront perdues.", onClose, onConfirm, loading }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
         <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 text-center">
                 <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <AlertTriangle className="w-8 h-8 text-red-500" />
                 </div>
-                <h3 className="text-xl font-black text-slate-900 mb-2">Supprimer le patient ?</h3>
+                <h3 className="text-xl font-black text-slate-900 mb-2">{title}</h3>
                 <p className="text-slate-500 text-sm mb-1">
-                    Vous êtes sur le point de supprimer
+                    {message}
                 </p>
-                <p className="font-bold text-slate-800 text-base mb-4">{patient.name}</p>
+                <p className="font-bold text-slate-800 text-base mb-4">{itemName}</p>
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 font-medium mb-6">
-                    ⚠️ Si ce patient a des rendez-vous, toutes les données seront perdues.
+                    ⚠️ {warning}
                 </div>
                 <div className="flex gap-3">
                     <button

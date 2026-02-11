@@ -6,9 +6,9 @@ import {
 import { getCurrentUser } from '../utils/auth';
 import { usePatients } from '../hooks/usePatients';
 import CreatePatientModal from '../components/CreatePatientModel.jsx';
-import EditPatientPanel from '../components/EditPatientPanel'; 
-import DeleteConfirmModal from '../components/DeleteConfirmModal'; 
-import Toast from '../components/Toast'; 
+import EditPatientPanel from '../components/EditPatientPanel';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import Toast from '../components/Toast';
 
 const PatientManagement = () => {
   const user = getCurrentUser() || {};
@@ -21,7 +21,7 @@ const PatientManagement = () => {
   const [deletingPatient, setDeletingPatient] = useState(null);
   const [toast, setToast] = useState(null);
 
-  
+
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
@@ -44,13 +44,13 @@ const PatientManagement = () => {
   };
 
   const StatCard = ({ label, value, icon: Icon, color }) => (
-  <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-    <div className="flex items-center justify-between mb-3">
-      <div className={`p-2 bg-${color}-100 rounded-xl`}><Icon className={`w-5 h-5 text-${color}-600`} /></div>
+    <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <div className={`p-2 bg-${color}-100 rounded-xl`}><Icon className={`w-5 h-5 text-${color}-600`} /></div>
+      </div>
+      <p className="text-3xl font-black text-gray-900 mb-1">{value}</p>
+      <p className="text-sm text-slate-500 font-medium">{label}</p>
     </div>
-    <p className="text-3xl font-black text-gray-900 mb-1">{value}</p>
-    <p className="text-sm text-slate-500 font-medium">{label}</p>
-  </div>
   );
 
   return (
@@ -190,7 +190,10 @@ const PatientManagement = () => {
 
         {deletingPatient && (
           <DeleteConfirmModal
-            patient={deletingPatient}
+            itemName={deletingPatient.name}
+            title="Supprimer le patient ?"
+            message="Vous êtes sur le point de supprimer le patient"
+            warning="Si ce patient a des rendez-vous, toutes les données seront perdues."
             onClose={() => setDeletingPatient(null)}
             onConfirm={handleDelete}
           />

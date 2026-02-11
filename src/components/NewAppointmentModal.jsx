@@ -6,6 +6,7 @@ import { usePatients } from '../hooks/usePatients';
 import { useDoctor } from '../hooks/useDoctor';
 import { appointmentService } from '../services/appointmentService';
 import CreatePatientModal from './CreatePatientModel';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultStatus }) => {
     const { doctor } = useDoctor();
@@ -103,7 +104,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                 });
             }
 
-            if (onSuccess) onSuccess();
+            if (onSuccess) onSuccess(appointment ? 'Rendez-vous modifié avec succès' : 'Rendez-vous créé avec succès');
             onClose();
             // Reset form
             setFormData({
@@ -122,17 +123,23 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
         }
     };
 
-    const handleDelete = async () => {
-        if (!appointment) return;
-        if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce rendez-vous ?")) return;
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+    const handleDeleteClick = () => {
+        if (!appointment) return;
+        setShowDeleteConfirm(true);
+    };
+
+    const handleConfirmDelete = async () => {
         setIsLoading(true);
         try {
             await appointmentService.delete(appointment.id);
-            if (onSuccess) onSuccess();
+            if (onSuccess) onSuccess('Rendez-vous supprimé avec succès');
+            setShowDeleteConfirm(false);
             onClose();
         } catch (err) {
             setError(err.message || "Erreur lors de la suppression");
+            setShowDeleteConfirm(false);
         } finally {
             setIsLoading(false);
         }
@@ -305,7 +312,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                             {appointment && (
                                 <button
                                     type="button"
-                                    onClick={handleDelete}
+                                    onClick={handleDeleteClick}
                                     disabled={isLoading}
                                     className="px-6 py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
@@ -334,6 +341,19 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                             // Refresh patients list
                             filters.setSearchTerm(''); // Trigger refresh effectively
                         }}
+                    />
+                )}
+
+                {/* Delete Confirmation Modal */}
+                {showDeleteConfirm && (
+                    <DeleteConfirmModal
+                        itemName="ce rendez-vous"
+                        title="Supprimer le rendez-vous ?"
+                        message="Vous êtes sur le point de supprimer"
+                        warning="Cette action est irréversible."
+                        onClose={() => setShowDeleteConfirm(false)}
+                        onConfirm={handleConfirmDelete}
+                        loading={isLoading}
                     />
                 )}
             </div>

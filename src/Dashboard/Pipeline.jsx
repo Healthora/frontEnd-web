@@ -13,15 +13,17 @@ import {
 import { useDoctor } from '../hooks/useDoctor';
 import { appointmentService } from '../services/appointmentService';
 import NewAppointmentModal from '../components/NewAppointmentModal';
+import Toast from '../components/Toast';
 
 const Pipeline = () => {
   const { doctor } = useDoctor();
   const [loading, setLoading] = useState(false);
-  const [appointments, setAppointments] = useState({}); // Grouped by status
+  const [appointments, setAppointments] = useState({}); 
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [defaultStatus, setDefaultStatus] = useState('nouveau');
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
   // Pipeline columns configuration based on User Statuses
   const columns = [
@@ -269,14 +271,23 @@ const Pipeline = () => {
               setIsNewAppointmentModalOpen(false);
               setSelectedAppointment(null);
             }}
-            onSuccess={() => {
+            onSuccess={(message) => {
               fetchAppointments();
               setIsNewAppointmentModalOpen(false);
               setSelectedAppointment(null);
+              setToast({ show: true, message: message || 'Opération réussie', type: 'success' });
             }}
             appointment={selectedAppointment}
             defaultStatus={defaultStatus}
           />
+
+          {toast.show && (
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast({ ...toast, show: false })}
+            />
+          )}
 
           {/* Search Bar */}
           <div className="relative max-w-md">
