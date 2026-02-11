@@ -57,5 +57,17 @@ export const appointmentService = {
         } catch (error) {
             throw error;
         }
+    },
+    delete: async (id) => {
+        try {
+            const res = await authenticatedFetch(`${API_URL}/appointments/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+            return data;
+        } catch (error) {
+            throw error;
+        }
     }
 };

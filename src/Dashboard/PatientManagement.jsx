@@ -64,9 +64,6 @@ const PatientManagement = () => {
             <p className="text-slate-500 text-sm">Gérez votre base de patients.</p>
           </div>
           <div className="flex gap-3">
-            <button onClick={actions.fetchPatients} disabled={loading} className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50">
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Actualiser
-            </button>
             <button onClick={() => setIsCreateModalOpen(true)} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-xl font-semibold shadow-md shadow-sky-200 hover:scale-[1.02] transition-all">
               <UserPlus className="w-4 h-4" /> Ajouter un patient
             </button>

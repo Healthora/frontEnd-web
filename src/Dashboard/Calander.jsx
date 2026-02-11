@@ -23,6 +23,7 @@ const Calendar = () => {
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch appointments
   const fetchAppointments = async () => {
@@ -33,25 +34,17 @@ const Calendar = () => {
 
       // Transform data for calendar
       const formatted = data.map(app => {
-        const dateObj = new Date(app.appointment_date);
-        // Get day index 0-6 (Mon-Sun)
-        // getDay(): 0=Sun, 1=Mon...6=Sat
-        // We want Mon=0...Sun=6
-        let dayIndex = dateObj.getDay() - 1;
-        if (dayIndex === -1) dayIndex = 6;
-
         return {
           id: app.id,
           patientName: `${app.patient_first_name} ${app.patient_last_name}`,
           time: app.time || '00:00',
           type: app.visit_type === 'follow_up' ? 'Suivi' : 'Consultation',
           status: app.status,
-          day: dayIndex,
-          date: app.appointment_date,
-          original: app
+          date: new Date(app.appointment_date), // Ensure Date object
+          original: app,
+          phone: app.patient_phone
         };
       });
-      console.log("Formatted appointments:", formatted);
       setAppointments(formatted);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -64,16 +57,94 @@ const Calendar = () => {
     fetchAppointments();
   }, [doctor?.doctorId]);
 
-  const weekDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-  const timeSlots = Array.from({ length: 11 }, (_, i) => `${8 + i}:00`);
+  // Date Utilities
+  const getStartOfWeek = (date) => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
+    return new Date(d.setDate(diff));
+  };
 
-  // Function to filter appointments for simple "current week" simulation
-  // The original code relied on `day` index (0-6) valid for "this week".
-  // To make it real, we should check if the appointment date falls in the selected week.
-  // For simplicity keeping the original behavior but noting it only works if dates align with current view.
-  // I will assume for now detailed date logic is out of scope for "display dynamic data", 
-  // but I'll add a filter to only show appointments matching the view logic if possible.
-  // For now I'll trust the `day` index mapping.
+  const addDays = (date, days) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
+  const addMonths = (date, months) => {
+    const result = new Date(date);
+    result.setMonth(result.getMonth() + months);
+    return result;
+  };
+
+  const isSameDay = (d1, d2) => {
+    return d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+  };
+
+  // Navigation Handlers
+  const handlePrev = () => {
+    if (view === 'day') setSelectedDate(addDays(selectedDate, -1));
+    else if (view === 'week') setSelectedDate(addDays(selectedDate, -7));
+    else if (view === 'month') setSelectedDate(addMonths(selectedDate, -1));
+  };
+
+  const handleNext = () => {
+    if (view === 'day') setSelectedDate(addDays(selectedDate, 1));
+    else if (view === 'week') setSelectedDate(addDays(selectedDate, 7));
+    else if (view === 'month') setSelectedDate(addMonths(selectedDate, 1));
+  };
+
+  // Data helpers
+  const getFilteredAppointments = (date) => {
+    return appointments.filter(apt => {
+      const matchesDate = isSameDay(apt.date, date);
+      if (!searchTerm) return matchesDate;
+
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch =
+        apt.patientName.toLowerCase().includes(searchLower) ||
+        (apt.phone && apt.phone.includes(searchTerm));
+
+      return matchesDate && matchesSearch;
+    });
+  };
+
+  const weekStart = getStartOfWeek(selectedDate);
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const weekDayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+  // Month Generation
+  const getMonthDays = () => {
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    // Start from Monday
+    const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    const days = [];
+
+    // Previous month filler
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    for (let i = startDay - 1; i >= 0; i--) {
+      days.push({ date: new Date(year, month - 1, prevMonthLastDay - i), isCurrentMonth: false });
+    }
+
+    // Current month days
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      days.push({ date: new Date(year, month, i), isCurrentMonth: true });
+    }
+
+    // Next month filler
+    const remaining = 42 - days.length; // 6 rows * 7 cols
+    for (let i = 1; i <= remaining; i++) {
+      days.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
+    }
+
+    return days;
+  };
 
   const statusColors = {
     confirme: {
@@ -117,6 +188,20 @@ const Calendar = () => {
       text: 'text-red-700',
       dot: 'bg-red-500',
       hover: 'hover:border-red-300 hover:shadow-red-200/50'
+    },
+    reprogramme: {
+      bg: 'bg-blue-50',
+      border: 'border-blue-200',
+      text: 'text-blue-700',
+      dot: 'bg-blue-500',
+      hover: 'hover:border-blue-300 hover:shadow-blue-200/50'
+    },
+    termine: {
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-200',
+      text: 'text-emerald-700',
+      dot: 'bg-emerald-500',
+      hover: 'hover:border-emerald-300 hover:shadow-emerald-200/50'
     }
   };
 
@@ -127,24 +212,26 @@ const Calendar = () => {
     setIsNewAppointmentModalOpen(true);
   };
 
-  const AppointmentCard = ({ appointment }) => {
+  const AppointmentCard = ({ appointment, compact = false }) => {
     const colors = getStatusColor(appointment.status);
+
+    if (compact) {
+      return (
+        <div
+          onClick={(e) => { e.stopPropagation(); handleEditAppointment(appointment); }}
+          className={`cursor-pointer ${colors.bg} border-l-2 ${colors.border} p-1 mb-1 rounded-sm text-[10px] truncate hover:scale-105 transition-transform`}
+          title={`${appointment.time} - ${appointment.patientName}`}
+        >
+          {appointment.patientName}
+        </div>
+      );
+    }
+
     return (
       <div
         onClick={() => handleEditAppointment(appointment)}
-        className={`group ${colors.bg} ${colors.border} border-2 rounded-xl p-3 cursor-pointer transition-all duration-200 ${colors.hover} hover:shadow-md`}
+        className={`group ${colors.bg} ${colors.border} border-2 rounded-xl p-3 cursor-pointer transition-all duration-200 ${colors.hover} hover:shadow-md mb-2`}
       >
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 ${colors.dot} rounded-full`} />
-            <span className={`text-xs font-bold ${colors.text}`}>
-              {appointment.time}
-            </span>
-          </div>
-          <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/50 rounded">
-            <MoreVertical className="w-3.5 h-3.5 text-gray-500" />
-          </button>
-        </div>
         <p className="font-bold text-gray-900 text-sm mb-1 truncate">
           {appointment.patientName}
         </p>
@@ -207,132 +294,177 @@ const Calendar = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <button
+                  onClick={handlePrev}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                >
                   <ChevronLeft className="w-5 h-5 text-gray-600" />
                 </button>
-                <div className="px-4 py-2 bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-100 rounded-xl">
-                  <p className="text-sm font-bold text-gray-900">
-                    {selectedDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                <div className="px-4 py-2 bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-100 rounded-xl min-w-[200px] text-center">
+                  <p className="text-sm font-bold text-gray-900 capitalize">
+                    {view === 'day'
+                      ? selectedDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                      : selectedDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+                    }
                   </p>
                 </div>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <button
+                  onClick={handleNext}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                >
                   <ChevronRight className="w-5 h-5 text-gray-600" />
                 </button>
                 <button
                   onClick={() => setSelectedDate(new Date())}
-                  className="ml-2 px-4 py-2 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="ml-2 px-4 py-2 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   Aujourd'hui
                 </button>
               </div>
 
               <div className="flex items-center gap-2">
-                <button className="p-2.5 hover:bg-gray-100 rounded-xl transition-colors"><Search className="w-5 h-5 text-gray-600" /></button>
-                <button className="p-2.5 hover:bg-gray-100 rounded-xl transition-colors"><Filter className="w-5 h-5 text-gray-600" /></button>
-                <button className="p-2.5 hover:bg-gray-100 rounded-xl transition-colors"><Download className="w-5 h-5 text-gray-600" /></button>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 w-48 transition-all"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Calendar Grid */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden min-h-[600px]">
           {loading ? (
             <div className="p-12 flex justify-center text-gray-400">Chargement...</div>
           ) : view === 'week' ? (
             <div className="p-6">
-              {/* days */}
-              <div className="grid grid-cols-8 gap-4 mb-4">
-                {/* <div className="text-xs font-bold text-gray-500 uppercase flex items-end pb-2">Heure</div> */}
-                {weekDays.map((day, idx) => (
-                  <div key={day} className="text-center">
-                    <div className="text-xs font-bold text-gray-500 uppercase mb-2">{day}</div>
-                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl font-bold text-sm ${idx === selectedDate.getDay() - 1 ? 'bg-sky-500 text-white' : 'text-gray-700'}`}>{idx + 1}</div>
-                  </div>
-                ))}
-              </div>
-              {/* time */}
-              <div className="grid grid-cols-8 gap-4">
-                {weekDays.map((day, dayIdx) => (
-                  <div key={day} className="relative">
-                    <div className="absolute inset-0 space-y-16">
-                      {timeSlots.map((_, idx) => (
-                        <div key={idx} className="h-16 border-t border-gray-100" />
-                      ))}
+              <div className="grid grid-cols-7 gap-4">
+                {weekDays.map((day, idx) => {
+                  const dayAppointments = getFilteredAppointments(day);
+                  const isToday = isSameDay(day, new Date());
+                  return (
+                    <div key={idx} className="flex flex-col h-full">
+                      <div className="text-center mb-4 p-2 rounded-xl transition-colors hover:bg-gray-50">
+                        <div className="text-xs font-bold text-gray-500 uppercase mb-1">{weekDayNames[idx]}</div>
+                        <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl font-bold text-lg ${isToday ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' : 'text-gray-700'
+                          }`}>
+                          {day.getDate()}
+                        </div>
+                      </div>
+
+                      {/* Week View Day Column */}
+                      <div className="flex-1 bg-gray-50/50 rounded-2xl p-2 min-h-[500px] border border-gray-100/50">
+                        {dayAppointments.length > 0 ? (
+                          dayAppointments.map(apt => (
+                            <AppointmentCard key={apt.id} appointment={apt} />
+                          ))
+                        ) : (
+                          <div className="h-full flex items-center justify-center text-gray-300 text-sm font-medium">
+                            No RDV
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="relative space-y-2 pt-2">
-                      {appointments.filter(apt => apt.day === dayIdx).map(apt => (
-                        <AppointmentCard key={apt.id} appointment={apt} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : view === 'day' ? (
             <div className="p-6">
-              <div className="grid grid-cols-12 gap-6">
-                <div className="col-span-2 space-y-16">
-                  {timeSlots.map((time) => (
-                    <div key={time} className="text-sm font-bold text-gray-600">{time}</div>
-                  ))}
+              <div className="max-w-3xl mx-auto">
+                <div className="mb-6 pb-6 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900 capitalize">
+                    {selectedDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                  </h2>
+                  <p className="text-gray-500 mt-1">
+                    {getFilteredAppointments(selectedDate).length} rendez-vous prévus
+                  </p>
                 </div>
-                <div className="col-span-10 relative">
-                  <div className="absolute inset-0 space-y-16">
-                    {timeSlots.map((_, idx) => (
-                      <div key={idx} className="h-16 border-t border-gray-100" />
-                    ))}
-                  </div>
-                  <div className="relative space-y-3 pt-3">
-                    {appointments.filter(apt => apt.day === (selectedDate.getDay() - 1 === -1 ? 6 : selectedDate.getDay() - 1)).map(apt => (
-                      <div key={apt.id} className="max-w-xl">
-                        <AppointmentCard appointment={apt} />
-                      </div>
-                    ))}
-                  </div>
+
+                <div className="space-y-4">
+                  {getFilteredAppointments(selectedDate).length > 0 ? (
+                    getFilteredAppointments(selectedDate).map(apt => (
+                      <AppointmentCard key={apt.id} appointment={apt} />
+                    ))
+                  ) : (
+                    <div className="py-20 text-center border-2 border-dashed border-gray-200 rounded-3xl">
+                      <CalendarIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-bold text-gray-900 mb-2">Aucun rendez-vous</h3>
+                      <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+                        Vous n'avez aucun rendez-vous prévu pour cette journée. Profitez-en pour vous reposer !
+                      </p>
+                      <button
+                        onClick={() => setIsNewAppointmentModalOpen(true)}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors"
+                      >
+                        <Plus className="w-5 h-5" />
+                        Ajouter un RDV
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ) : (
+            // Month View
             <div className="p-6">
-              <div className="grid grid-cols-7 gap-3 mb-4">
-                {weekDays.map((day) => (
-                  <div key={day} className="text-center text-xs font-bold text-gray-500 uppercase py-3">{day}</div>
+              <div className="grid grid-cols-7 gap-px bg-gray-100 rounded-2xl overflow-hidden border border-gray-200">
+                {weekDayNames.map((day) => (
+                  <div key={day} className="bg-gray-50 p-4 text-center text-xs font-extrabold text-gray-500 uppercase tracking-wider">
+                    {day}
+                  </div>
                 ))}
-              </div>
-              <div className="grid grid-cols-7 gap-3">
-                {Array.from({ length: 35 }, (_, i) => {
-                  const dayNum = i - 1;
-                  const isToday = dayNum === 1; // dummy logic
+
+                {getMonthDays().map((item, i) => {
+                  const dayAppointments = getFilteredAppointments(item.date);
+                  const isToday = isSameDay(item.date, new Date());
+                  const isSelected = isSameDay(item.date, selectedDate);
+
                   return (
-                    <div key={i} className={`min-h-[120px] rounded-2xl border-2 p-3 ${dayNum < 0 || dayNum > 28 ? 'bg-gray-50/50 border-gray-100' : isToday ? 'bg-sky-50 border-sky-200' : 'bg-white border-gray-100'}`}>
-                      {dayNum >= 0 && dayNum <= 28 && (
-                        <>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className={`text-sm font-bold ${isToday ? 'bg-sky-500 text-white w-7 h-7 flex items-center justify-center rounded-lg' : 'text-gray-700'}`}>{dayNum + 1}</span>
+                    <div
+                      key={i}
+                      onClick={() => { setSelectedDate(item.date); setView('day'); }}
+                      className={`bg-white min-h-[120px] p-2 hover:bg-gray-50 transition-colors cursor-pointer flex flex-col gap-1
+                        ${!item.isCurrentMonth ? 'bg-gray-50/30 text-gray-400' : ''}
+                      `}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-bold
+                           ${isToday ? 'bg-sky-500 text-white shadow-md' : isSelected ? 'bg-gray-900 text-white' : 'text-gray-700'}
+                         `}>
+                          {item.date.getDate()}
+                        </span>
+                        {dayAppointments.length > 0 && (
+                          <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-md">
+                            {dayAppointments.length}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex-1 mt-1 space-y-1 overflow-y-auto max-h-[80px]">
+                        {dayAppointments.slice(0, 3).map(apt => (
+                          <div key={apt.id} className="truncate">
+                            <AppointmentCard appointment={apt} compact={true} />
                           </div>
-                          <div className="space-y-1">
-                            {appointments.filter(apt => apt.day === dayNum).slice(0, 2).map(apt => (
-                              <div key={apt.id} className={`${getStatusColor(apt.status).bg} border rounded-lg p-1.5 text-xs`}>
-                                <p className="font-semibold truncate">{apt.time} - {apt.patientName}</p>
-                              </div>
-                            ))}
+                        ))}
+                        {dayAppointments.length > 3 && (
+                          <div className="text-[10px] text-gray-500 font-medium pl-1">
+                            + {dayAppointments.length - 3} autres
                           </div>
-                        </>
-                      )}
+                        )}
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </div>
           )}
-        </div>
-
-        {/* Legend */}
-        <div className="mt-6 bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex gap-6">
-          <div className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500 rounded-full" /><span className="text-sm text-gray-700">Confirmé</span></div>
-          <div className="flex items-center gap-2"><div className="w-3 h-3 bg-indigo-500 rounded-full" /><span className="text-sm text-gray-700">Nouveau</span></div>
-          <div className="flex items-center gap-2"><div className="w-3 h-3 bg-gray-400 rounded-full" /><span className="text-sm text-gray-700">Annulé/Absent</span></div>
         </div>
       </div>
     </div>

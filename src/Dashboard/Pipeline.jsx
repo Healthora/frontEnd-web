@@ -21,6 +21,7 @@ const Pipeline = () => {
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [defaultStatus, setDefaultStatus] = useState('nouveau');
 
   // Pipeline columns configuration based on User Statuses
   const columns = [
@@ -116,8 +117,9 @@ const Pipeline = () => {
     setIsNewAppointmentModalOpen(true);
   };
 
-  const handleNewAppointment = () => {
+  const handleNewAppointment = (status = 'nouveau') => {
     setSelectedAppointment(null);
+    setDefaultStatus(status);
     setIsNewAppointmentModalOpen(true);
   };
 
@@ -171,14 +173,11 @@ const Pipeline = () => {
                 {appointment.patientName}
               </h4>
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                <Clock className="w-3 h-3" />
-                <span className="font-semibold">{appointment.time}</span>
-                <span>•</span>
                 <span>{appointment.date}</span>
               </div>
             </div>
           </div>
-          <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded-lg">
+          <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded-lg cursor-pointer">
             <MoreVertical className="w-4 h-4 text-gray-500" />
           </button>
         </div>
@@ -207,7 +206,7 @@ const Pipeline = () => {
 
   return (
     <div className="min-h-screen ">
-      {/* Custom Scrollbar Styles for the main Horizontal Scroll */}
+      {/* Custom Scrollbar Styles for the main Horizontal Scroll and Vertical Lists */}
       <style>{`
         .horizontal-scroll::-webkit-scrollbar {
           height: 10px;
@@ -221,6 +220,21 @@ const Pipeline = () => {
           border-radius: 8px;
         }
         .horizontal-scroll::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+        
+        .vertical-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .vertical-scroll::-webkit-scrollbar-track {
+          background: transparent;
+          border-radius: 4px;
+        }
+        .vertical-scroll::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .vertical-scroll::-webkit-scrollbar-thumb:hover {
           background: #94a3b8;
         }
       `}</style>
@@ -240,8 +254,8 @@ const Pipeline = () => {
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={handleNewAppointment}
-                className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-sky-500 to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all"
+                onClick={() => handleNewAppointment('nouveau')}
+                className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-sky-500 to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all cursor-pointer"
               >
                 <Plus className="w-5 h-5" />
                 Nouveau RDV
@@ -261,6 +275,7 @@ const Pipeline = () => {
               setSelectedAppointment(null);
             }}
             appointment={selectedAppointment}
+            defaultStatus={defaultStatus}
           />
 
           {/* Search Bar */}
@@ -282,19 +297,19 @@ const Pipeline = () => {
             return (
               <div
                 key={column.id}
-                className="shrink-0 min-w-[280px] w-[320px] bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 flex flex-col h-fit"
+                className="shrink-0 min-w-[280px] w-[320px] bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 flex flex-col max-h-[calc(100vh-240px)]"
               >
                 {/* Column Header */}
-                <div className="mb-5">
+                <div className="mb-5 flex-none">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-black text-gray-900 text-sm">
                       {column.title}
                     </h3>
                     <button
-                      onClick={handleNewAppointment}
+                      onClick={() => handleNewAppointment(column.id)}
                       className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <Plus className="w-4 h-4 text-gray-500" />
+                      <Plus className="w-4 h-4 text-gray-500 cursor-pointer" />
                     </button>
                   </div>
 
@@ -307,7 +322,7 @@ const Pipeline = () => {
                 </div>
 
                 {/* Appointments List */}
-                <div className="space-y-3">
+                <div className="space-y-3 overflow-y-auto pr-1 vertical-scroll">
                   {columnAppointments.map((appointment) => (
                     <AppointmentCard
                       key={appointment.id}
@@ -329,8 +344,8 @@ const Pipeline = () => {
             );
           })}
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

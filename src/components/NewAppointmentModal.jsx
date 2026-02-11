@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Search, Calendar, FileText, Check } from 'lucide-react';
+import { X, UserPlus, Search, Calendar, FileText, Check, Trash2 } from 'lucide-react';
+
 import { usePatients } from '../hooks/usePatients';
 import { useDoctor } from '../hooks/useDoctor';
 import { appointmentService } from '../services/appointmentService';
 import CreatePatientModal from './CreatePatientModel';
 
-const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
+const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultStatus }) => {
     const { doctor } = useDoctor();
     const { patients, filters } = usePatients(doctor?.doctorId);
     const [isClientModalOpen, setIsClientModalOpen] = useState(false);
@@ -50,13 +51,13 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
                 patientId: '',
                 date: '',
                 type: 'consultation',
-                status: 'nouveau',
+                status: defaultStatus || 'nouveau',
                 notes: ''
             });
             setSelectedPatient(null);
             setSearchTerm('');
         }
-    }, [appointment, isOpen]);
+    }, [appointment, isOpen, defaultStatus]);
 
     // Filter patients for search
     const filteredPatients = patients.filter(p =>
@@ -116,6 +117,22 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
             setSearchTerm('');
         } catch (err) {
             setError(err.message || `Erreur lors de la ${appointment ? 'modification' : 'création'} du rendez-vous`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!appointment) return;
+        if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce rendez-vous ?")) return;
+
+        setIsLoading(true);
+        try {
+            await appointmentService.delete(appointment.id);
+            if (onSuccess) onSuccess();
+            onClose();
+        } catch (err) {
+            setError(err.message || "Erreur lors de la suppression");
         } finally {
             setIsLoading(false);
         }
@@ -285,6 +302,17 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
                             >
                                 Annuler
                             </button>
+                            {appointment && (
+                                <button
+                                    type="button"
+                                    onClick={handleDelete}
+                                    disabled={isLoading}
+                                    className="px-6 py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                    Supprimer
+                                </button>
+                            )}
                             <button
                                 type="submit"
                                 disabled={isLoading}
