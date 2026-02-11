@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Clock,
   User,
@@ -7,214 +7,132 @@ import {
   Calendar,
   MoreVertical,
   Plus,
-  Filter,
   Search,
   Download
 } from 'lucide-react';
+import { useDoctor } from '../hooks/useDoctor';
+import { appointmentService } from '../services/appointmentService';
+import NewAppointmentModal from '../components/NewAppointmentModal';
 
 const Pipeline = () => {
-  // Pipeline columns configuration
+  const { doctor } = useDoctor();
+  const [loading, setLoading] = useState(false);
+  const [appointments, setAppointments] = useState({}); // Grouped by status
+  const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Pipeline columns configuration based on User Statuses
   const columns = [
     {
-      id: 'new',
-      title: 'Nouvelles Demandes',
+      id: 'nouveau',
+      title: 'Nouveau',
       color: 'sky',
-      count: 8,
       gradient: 'from-sky-500 to-sky-600'
     },
     {
-      id: 'confirmed',
-      title: 'Confirmés',
+      id: 'confirme',
+      title: 'Confirmé',
       color: 'indigo',
-      count: 12,
       gradient: 'from-indigo-500 to-indigo-600'
     },
     {
-      id: 'inProgress',
-      title: 'En Cours',
+      id: 'suivi',
+      title: 'Suivi',
       color: 'purple',
-      count: 5,
       gradient: 'from-purple-500 to-purple-600'
     },
     {
-      id: 'completed',
-      title: 'Terminés',
+      id: 'ne_repond_pas',
+      title: 'Ne Répond Pas',
+      color: 'orange',
+      gradient: 'from-orange-500 to-orange-600'
+    },
+    {
+      id: 'reprogramme',
+      title: 'Reprogrammé',
+      color: 'blue',
+      gradient: 'from-blue-500 to-blue-600'
+    },
+    {
+      id: 'termine',
+      title: 'Terminé',
       color: 'emerald',
-      count: 24,
       gradient: 'from-emerald-500 to-emerald-600'
     },
     {
-      id: 'noshow',
-      title: 'Absents',
+      id: 'absent',
+      title: 'Absent',
       color: 'gray',
-      count: 3,
       gradient: 'from-gray-500 to-gray-600'
     },
   ];
 
-  // Sample appointment data
-  const initialAppointments = {
-    new: [
-      {
-        id: 1,
-        patientName: 'Marie Dupont',
-        avatar: 'MD',
-        time: '09:00',
-        date: '3 Fév',
-        type: 'Consultation',
-        phone: '+33 6 12 34 56 78',
-        notes: 'Premier rendez-vous'
-      },
-      {
-        id: 2,
-        patientName: 'Ahmed Ben Ali',
-        avatar: 'AB',
-        time: '10:30',
-        date: '3 Fév',
-        type: 'Suivi',
-        phone: '+33 6 98 76 54 32',
-        notes: 'Suivi post-opératoire'
-      }
-    ],
-    confirmed: [
-      {
-        id: 3,
-        patientName: 'Sophie Martin',
-        avatar: 'SM',
-        time: '14:00',
-        date: '3 Fév',
-        type: 'Check-up',
-        phone: '+33 6 11 22 33 44',
-        notes: 'Examen de routine'
-      },
-      {
-        id: 4,
-        patientName: 'Lucas Bernard',
-        avatar: 'LB',
-        time: '15:30',
-        date: '3 Fév',
-        type: 'Consultation',
-        phone: '+33 6 55 66 77 88',
-        notes: 'Première consultation'
-      },
-      {
-        id: 5,
-        patientName: 'Emma Dubois',
-        avatar: 'ED',
-        time: '16:00',
-        date: '3 Fév',
-        type: 'Urgence',
-        phone: '+33 6 99 88 77 66',
-        notes: 'Douleur aiguë'
-      }
-    ],
-    inProgress: [
-      {
-        id: 6,
-        patientName: 'Thomas Petit',
-        avatar: 'TP',
-        time: '11:00',
-        date: '3 Fév',
-        type: 'Suivi',
-        phone: '+33 6 44 33 22 11',
-        notes: 'En consultation'
-      }
-    ],
-    completed: [
-      {
-        id: 7,
-        patientName: 'Julie Moreau',
-        avatar: 'JM',
-        time: '08:30',
-        date: '3 Fév',
-        type: 'Consultation',
-        phone: '+33 6 77 88 99 00',
-        notes: 'Consultation terminée'
-      },
-      {
-        id: 8,
-        patientName: 'Pierre Leroy',
-        avatar: 'PL',
-        time: '09:30',
-        date: '3 Fév',
-        type: 'Check-up',
-        phone: '+33 6 22 33 44 55',
-        notes: 'Bilan complet effectué'
-      }
-    ],
-    noshow: [
-      {
-        id: 9,
-        patientName: 'Claire Durand',
-        avatar: 'CD',
-        time: '10:00',
-        date: '2 Fév',
-        type: 'Consultation',
-        phone: '+33 6 66 77 88 99',
-        notes: 'Patient non venu'
-      }
-    ],
-    archived: []
-  };
+  const fetchAppointments = async () => {
+    if (!doctor?.doctorId) return;
+    setLoading(true);
+    try {
+      const data = await appointmentService.getAll(doctor.doctorId);
 
-  const [appointments, setAppointments] = useState(initialAppointments);
-  const [draggedCard, setDraggedCard] = useState(null);
-  const [dragOverColumn, setDragOverColumn] = useState(null);
+      // Group by status
+      const grouped = {};
+      columns.forEach(col => grouped[col.id] = []);
 
-  // Drag and drop handlers
-  const handleDragStart = (e, appointment, sourceColumn) => {
-    setDraggedCard({ appointment, sourceColumn });
-    e.currentTarget.style.opacity = '0.5';
-  };
+      data.forEach(app => {
+        const status = app.status || 'nouveau';
+        if (grouped[status]) {
+          const dateObj = new Date(app.appointment_date);
+          // Format date for display (e.g., "3 Fév")
+          const formattedDate = dateObj.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 
-  const handleDragEnd = (e) => {
-    e.currentTarget.style.opacity = '1';
-    setDraggedCard(null);
-    setDragOverColumn(null);
-  };
+          grouped[status].push({
+            id: app.id,
+            patientName: `${app.patient_first_name} ${app.patient_last_name}`,
+            avatar: `${app.patient_first_name?.[0] || ''}${app.patient_last_name?.[0] || ''}`,
+            time: app.time || '00:00',
+            date: formattedDate,
+            type: app.visit_type === 'follow_up' ? 'Suivi' : 'Consultation',
+            phone: app.patient_phone,
+            notes: app.notes ? app.notes.replace(/\[Time: .*?\]/, '').trim() : '', // Clean notes
+            original: app
+          });
+        }
+      });
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDragEnter = (columnId) => {
-    setDragOverColumn(columnId);
-  };
-
-  const handleDragLeave = () => {
-    setDragOverColumn(null);
-  };
-
-  const handleDrop = (e, targetColumn) => {
-    e.preventDefault();
-    
-    if (!draggedCard) return;
-
-    const { appointment, sourceColumn } = draggedCard;
-
-    if (sourceColumn === targetColumn) {
-      setDragOverColumn(null);
-      return;
+      setAppointments(grouped);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Remove from source
-    const newAppointments = { ...appointments };
-    newAppointments[sourceColumn] = newAppointments[sourceColumn].filter(
-      apt => apt.id !== appointment.id
+  useEffect(() => {
+    fetchAppointments();
+  }, [doctor?.doctorId]);
+
+  const handleEditAppointment = (appointment) => {
+    setSelectedAppointment(appointment.original);
+    setIsNewAppointmentModalOpen(true);
+  };
+
+  const handleNewAppointment = () => {
+    setSelectedAppointment(null);
+    setIsNewAppointmentModalOpen(true);
+  };
+
+  // Filter appointments based on search term
+  const filteredAppointments = (columnId) => {
+    const list = appointments[columnId] || [];
+    if (!searchTerm) return list;
+    return list.filter(app =>
+      app.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (app.phone && app.phone.includes(searchTerm))
     );
-
-    // Add to target
-    newAppointments[targetColumn] = [
-      ...newAppointments[targetColumn],
-      appointment
-    ];
-
-    setAppointments(newAppointments);
-    setDragOverColumn(null);
   };
 
   // Appointment Card Component
-  const AppointmentCard = ({ appointment, columnId }) => {
+  const AppointmentCard = ({ appointment }) => {
     const getTypeColor = (type) => {
       const colors = {
         'Consultation': 'bg-sky-100 text-sky-700 border-sky-200',
@@ -233,21 +151,19 @@ const Pipeline = () => {
         'from-emerald-400 to-emerald-600',
         'from-pink-400 to-pink-600'
       ];
-      const index = name.charCodeAt(0) % gradients.length;
+      const index = (name.charCodeAt(0) || 0) % gradients.length;
       return gradients[index];
     };
 
     return (
       <div
-        draggable
-        onDragStart={(e) => handleDragStart(e, appointment, columnId)}
-        onDragEnd={handleDragEnd}
-        className="group bg-white rounded-xl border-2 border-gray-100 p-4 cursor-move hover:border-sky-200 hover:shadow-lg transition-all duration-200 active:rotate-2 active:scale-105"
+        onClick={() => handleEditAppointment(appointment)}
+        className="group bg-white rounded-xl border-2 border-gray-100 p-4 cursor-pointer hover:border-sky-200 hover:shadow-lg transition-all duration-200 active:scale-[1.02]"
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3 flex-1">
-            <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${getAvatarGradient(appointment.patientName)} flex items-center justify-center text-white font-bold text-sm shadow-md flex-shrink-0`}>
+            <div className={`w-11 h-11 rounded-full bg-linear-to-br ${getAvatarGradient(appointment.patientName)} flex items-center justify-center text-white font-bold text-sm shadow-md shrink-0`}>
               {appointment.avatar}
             </div>
             <div className="flex-1 min-w-0">
@@ -280,7 +196,7 @@ const Pipeline = () => {
           </div>
           {appointment.notes && (
             <div className="flex items-start gap-2 text-xs text-gray-600">
-              <MessageSquare className="w-3 h-3 mt-0.5 flex-shrink-0" />
+              <MessageSquare className="w-3 h-3 mt-0.5 shrink-0" />
               <span className="line-clamp-2">{appointment.notes}</span>
             </div>
           )}
@@ -290,7 +206,7 @@ const Pipeline = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sky-50/30 ">
+    <div className="min-h-screen ">
       {/* Custom Scrollbar Styles for the main Horizontal Scroll */}
       <style>{`
         .horizontal-scroll::-webkit-scrollbar {
@@ -310,7 +226,7 @@ const Pipeline = () => {
       `}</style>
 
       <div className="max-w-[1600px] mx-auto">
-        
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -319,92 +235,99 @@ const Pipeline = () => {
                 Pipeline de Rendez-vous
               </h1>
               <p className="text-gray-500">
-                Gérez vos rendez-vous par glisser-déposer
+                Gérez vos rendez-vous
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                <Filter className="w-4 h-4" />
-                Filtrer
-              </button>
-              {/* <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                <Download className="w-4 h-4" />
-                Exporter
-              </button> */}
-              <button className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all">
+              <button
+                onClick={handleNewAppointment}
+                className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-sky-500 to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all"
+              >
                 <Plus className="w-5 h-5" />
                 Nouveau RDV
               </button>
             </div>
           </div>
 
+          <NewAppointmentModal
+            isOpen={isNewAppointmentModalOpen}
+            onClose={() => {
+              setIsNewAppointmentModalOpen(false);
+              setSelectedAppointment(null);
+            }}
+            onSuccess={() => {
+              fetchAppointments();
+              setIsNewAppointmentModalOpen(false);
+              setSelectedAppointment(null);
+            }}
+            appointment={selectedAppointment}
+          />
+
           {/* Search Bar */}
           <div className="relative max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Rechercher un patient..."
+              placeholder="Rechercher un patient (nom, téléphone)..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all shadow-sm"
             />
           </div>
         </div>
 
         <div className="flex gap-6 overflow-x-auto pb-6 horizontal-scroll">
-          {columns.map((column) => (
-            <div
-              key={column.id}
-              onDragOver={handleDragOver}
-              onDragEnter={() => handleDragEnter(column.id)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, column.id)}
-              // Fixed width (min-w-[350px]) ensures columns don't shrink
-              className={`flex-shrink-0 min-w-[250px] bg-white rounded-2xl border-2 p-5 flex flex-col transition-all duration-200 h-fit ${
-                dragOverColumn === column.id
-                  ? 'border-sky-300 shadow-xl shadow-sky-200/50'
-                  : 'border-gray-100 shadow-sm'
-              }`}
-            >
-              {/* Column Header */}
-              <div className="mb-5">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-black text-gray-900 text-sm">
-                    {column.title}
-                  </h3>
-                  <button className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
-                    <Plus className="w-4 h-4 text-gray-500" />
-                  </button>
-                </div>
-                
-                {/* Count Badge */}
-                <div className={`inline-flex items-center px-3 py-1.5 bg-gradient-to-r ${column.gradient} rounded-lg shadow-md`}>
-                  <span className="text-white text-sm font-bold">
-                    {appointments[column.id]?.length || 0} RDV
-                  </span>
-                </div>
-              </div>
-
-              {/* Appointments List */}
-              <div className="space-y-3">
-                {appointments[column.id]?.map((appointment) => (
-                  <AppointmentCard
-                    key={appointment.id}
-                    appointment={appointment}
-                    columnId={column.id}
-                  />
-                ))}
-
-                {/* Empty State */}
-                {(!appointments[column.id] || appointments[column.id].length === 0) && (
-                  <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-200 rounded-xl">
-                    <Calendar className="w-10 h-10 text-gray-300 mb-3" />
-                    <p className="text-sm text-gray-500 text-center">
-                      Aucun rendez-vous
-                    </p>
+          {columns.map((column) => {
+            const columnAppointments = filteredAppointments(column.id);
+            return (
+              <div
+                key={column.id}
+                className="shrink-0 min-w-[280px] w-[320px] bg-white rounded-2xl border-2 border-gray-100 shadow-sm p-5 flex flex-col h-fit"
+              >
+                {/* Column Header */}
+                <div className="mb-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-black text-gray-900 text-sm">
+                      {column.title}
+                    </h3>
+                    <button
+                      onClick={handleNewAppointment}
+                      className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-4 h-4 text-gray-500" />
+                    </button>
                   </div>
-                )}
+
+                  {/* Count Badge */}
+                  <div className={`inline-flex items-center px-3 py-1.5 bg-linear-to-r ${column.gradient} rounded-lg shadow-md`}>
+                    <span className="text-white text-sm font-bold">
+                      {columnAppointments.length} RDV
+                    </span>
+                  </div>
+                </div>
+
+                {/* Appointments List */}
+                <div className="space-y-3">
+                  {columnAppointments.map((appointment) => (
+                    <AppointmentCard
+                      key={appointment.id}
+                      appointment={appointment}
+                    />
+                  ))}
+
+                  {/* Empty State */}
+                  {columnAppointments.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-200 rounded-xl">
+                      <Calendar className="w-10 h-10 text-gray-300 mb-3" />
+                      <p className="text-sm text-gray-500 text-center">
+                        {searchTerm ? 'Aucun résultat' : 'Aucun rendez-vous'}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

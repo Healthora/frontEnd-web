@@ -23,8 +23,12 @@ import Pipeline from "./Pipeline";
 import Statisticsdashboard from "./Statisticsdashboard";
 import PatientManagement from "./PatientManagement";
 import SettingsPage from "./SettingsPage";
+import { useDoctor } from "../hooks/useDoctor";
 
 const MedicalDashboard = () => {
+  const {
+    doctor: currentDoctor,
+  } = useDoctor();
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -61,7 +65,7 @@ const MedicalDashboard = () => {
                 </div>
                 <div>
                   <h1 className="text-lg font-black text-gray-900">MedSaaS</h1>
-                  <p className="text-xs text-gray-500">Cabinet Médical</p>
+                  <p className="text-xs text-gray-500">{currentDoctor.cabinetName}</p>
                 </div>
               </div>
               <button

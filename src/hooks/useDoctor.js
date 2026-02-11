@@ -12,6 +12,7 @@ export const useDoctor = (onUserUpdate) => {
         specialty: user.specialty || '',
         cabinetName: user.cabinetName || '',
         cabinetAddress: user.cabinetAddress || '',
+        cabinetId: user.cabinetId || null,
         schedule: user.schedule || {
             monday: { isOpen: true, start: "09:00", end: "17:00" },
             tuesday: { isOpen: true, start: "09:00", end: "17:00" },
@@ -20,7 +21,8 @@ export const useDoctor = (onUserUpdate) => {
             friday: { isOpen: true, start: "09:00", end: "17:00" },
             saturday: { isOpen: false, start: "09:00", end: "12:00" },
             sunday: { isOpen: false, start: "", end: "" }
-        }
+        },
+        doctorId: user.doctorId
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +45,7 @@ export const useDoctor = (onUserUpdate) => {
                         specialty: data.specialty || '',
                         cabinetName: data.cabinetName || '',
                         cabinetAddress: data.cabinetAddress || '',
+                        cabinetId: data.cabinetId || null,
                         schedule: data.schedule || {
                             monday: { isOpen: true, start: "09:00", end: "17:00" },
                             tuesday: { isOpen: true, start: "09:00", end: "17:00" },
@@ -51,7 +54,8 @@ export const useDoctor = (onUserUpdate) => {
                             friday: { isOpen: true, start: "09:00", end: "17:00" },
                             saturday: { isOpen: false, start: "09:00", end: "12:00" },
                             sunday: { isOpen: false, start: "", end: "" }
-                        }
+                        },
+                        doctorId: data.doctorId || user.doctorId
                     });
                 }
             } catch (err) {
