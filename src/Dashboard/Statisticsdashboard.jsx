@@ -12,7 +12,7 @@ import { useDoctor } from '../hooks/useDoctor';
 import { appointmentService } from '../services/appointmentService';
 import { patientService } from '../services/patientService';
 
-// --- Helpers ---
+
 const isToday = (dateStr) => {
   if (!dateStr) return false;
   const date = new Date(dateStr);
@@ -24,12 +24,19 @@ const isToday = (dateStr) => {
 
 const isThisWeek = (dateStr) => {
   if (!dateStr) return false;
+
   const date = new Date(dateStr);
   const now = new Date();
+
   const startOfWeek = new Date(now);
   startOfWeek.setDate(now.getDate() - now.getDay());
-  startOfWeek.setHours(0, 0, 0, 0);
-  return date >= startOfWeek;
+  startOfWeek.setHours(0,0,0,0);
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23,59,59,999);
+
+  return date >= startOfWeek && date <= endOfWeek;
 };
 
 const isThisMonth = (dateStr) => {
@@ -46,8 +53,6 @@ const isThisYear = (dateStr) => {
   const today = new Date();
   return date.getFullYear() === today.getFullYear();
 };
-
-// --- Custom Components ---
 
 const SimpleLineChart = ({ data, color = "#3b82f6" }) => {
   if (!data || data.length === 0) return null;
@@ -86,71 +91,85 @@ const SimpleLineChart = ({ data, color = "#3b82f6" }) => {
 
 const SimplePieChart = ({ data }) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  
   if (total === 0) return (
     <div className="h-48 flex items-center justify-center text-gray-400">
       <PieChartIcon className="w-12 h-12 opacity-20" />
     </div>
   );
 
-  // Pre-calculate angles for each segment
-  const segments = data.reduce((acc, item, i) => {
-    const percentage = (item.value / total) * 100;
-    const angle = (percentage / 100) * 360;
-    const startAngle = i === 0 ? 0 : acc[i - 1].endAngle;
-    const endAngle = startAngle + angle;
+  // Special case: only one item with 100%
+  if (data.length === 1) {
+    return (
+      <div className="flex flex-col items-center gap-6 w-full">
+        <svg viewBox="0 0 100 100" className="w-40 h-40 -rotate-90">
+          <circle cx="50" cy="50" r="40" fill={data[0].color} />
+          <circle cx="50" cy="50" r="28" fill="white" />
+        </svg>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2 w-full">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: data[0].color }} />
+            <span className="text-xs font-bold text-gray-600 truncate">{data[0].label}</span>
+            <span className="text-[10px] text-gray-400 font-bold ml-auto">100%</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-    acc.push({
-      ...item,
-      startAngle,
-      endAngle,
-      angle,
-      percentage
-    });
-    return acc;
-  }, []);
-
+  let currentAngle = 0;
+  
   return (
     <div className="flex flex-col items-center gap-6 w-full">
       <svg viewBox="0 0 100 100" className="w-40 h-40 -rotate-90">
-        {segments.map((segment, i) => {
-          // Special case: if this is the only segment (100%), draw a full circle
-          if (segments.length === 1) {
+        {data.map((item, i) => {
+          const percentage = (item.value / total) * 100;
+          const angle = (percentage / 100) * 360;
+          
+          const x1 = 50 + 40 * Math.cos((currentAngle * Math.PI) / 180);
+          const y1 = 50 + 40 * Math.sin((currentAngle * Math.PI) / 180);
+          
+          currentAngle += angle;
+          
+          const x2 = 50 + 40 * Math.cos((currentAngle * Math.PI) / 180);
+          const y2 = 50 + 40 * Math.sin((currentAngle * Math.PI) / 180);
+          
+          // Fix for near-100%: if angle >= 359.9, draw as full circle
+          if (angle >= 359.9) {
             return (
-              <circle
-                key={i}
-                cx="50"
-                cy="50"
-                r="40"
-                fill={segment.color}
+              <circle 
+                key={i} 
+                cx="50" 
+                cy="50" 
+                r="40" 
+                fill={item.color}
                 className="hover:opacity-80 transition-opacity cursor-pointer"
               />
             );
           }
-
-          // Normal case: multiple segments
-          const x1 = 50 + 40 * Math.cos((segment.startAngle * Math.PI) / 180);
-          const y1 = 50 + 40 * Math.sin((segment.startAngle * Math.PI) / 180);
-          const x2 = 50 + 40 * Math.cos((segment.endAngle * Math.PI) / 180);
-          const y2 = 50 + 40 * Math.sin((segment.endAngle * Math.PI) / 180);
-          const largeArc = segment.angle > 180 ? 1 : 0;
+          
+          const largeArc = angle > 180 ? 1 : 0;
 
           return (
             <path
               key={i}
               d={`M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`}
-              fill={segment.color}
+              fill={item.color}
               className="hover:opacity-80 transition-opacity cursor-pointer"
             />
           );
         })}
         <circle cx="50" cy="50" r="28" fill="white" />
       </svg>
+      
       <div className="grid grid-cols-2 gap-x-8 gap-y-2 w-full">
-        {segments.map((segment, i) => (
+        {data.map((item, i) => (
           <div key={i} className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: segment.color }} />
-            <span className="text-xs font-bold text-gray-600 truncate">{segment.label}</span>
-            <span className="text-[10px] text-gray-400 font-bold ml-auto">{segment.percentage.toFixed(0)}%</span>
+            <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+            <span className="text-xs font-bold text-gray-600 truncate">{item.label}</span>
+            <span className="text-[10px] text-gray-400 font-bold ml-auto">
+              {((item.value / total) * 100).toFixed(0)}%
+            </span>
           </div>
         ))}
       </div>
@@ -165,7 +184,7 @@ const StatisticsDashboard = () => {
     appointments: [],
     patients: []
   });
-  const [chartRange, setChartRange] = useState('week'); // 'week' or 'month'
+  const [chartRange, setChartRange] = useState('week');
   const [chartDate, setChartDate] = useState(new Date());
 
   useEffect(() => {
@@ -217,7 +236,6 @@ const StatisticsDashboard = () => {
       termine: totalApps > 0 ? ((statusCounts.termine / totalApps) * 100).toFixed(1) : 0
     };
 
-    // Status distribution for pie chart
     const statusDistribution = [
       { label: 'Confirmé', value: statusCounts.confirme, color: '#10b981' },
       { label: 'Terminé', value: statusCounts.termine, color: '#6366f1' },
@@ -228,7 +246,7 @@ const StatisticsDashboard = () => {
       { label: 'Suivi', value: statusCounts.suivi, color: '#ec4899' }
     ].filter(s => s.value > 0);
 
-    // 👥 3. Patient Behavior
+    // 👥 3. Patient Behavior 
     const patientAppointmentCounts = {};
     apps.forEach(app => {
       if (!patientAppointmentCounts[app.patient_id]) {
@@ -237,16 +255,35 @@ const StatisticsDashboard = () => {
       patientAppointmentCounts[app.patient_id]++;
     });
 
-    const returningPatients = Object.values(patientAppointmentCounts).filter(count => count > 1).length;
-    const newPatients = Object.values(patientAppointmentCounts).filter(count => count === 1).length;
-    const avgVisitsPerPatient = patients.length > 0 ? (apps.length / patients.length).toFixed(1) : 0;
+    // Patients who have at least one appointment
+    const patientsWithAppointments = Object.keys(patientAppointmentCounts).length;
 
-    // Retention rate (patients with more than 1 visit)
-    const retentionRate = patients.length > 0 ? ((returningPatients / patients.length) * 100).toFixed(1) : 0;
+    // Patients who returned (2+ visits)
+    const returningPatients = Object.values(patientAppointmentCounts)
+      .filter(count => count > 1).length;
 
-    // ⏰ 4. Time Optimization (simplified - would need time data in appointments)
-    // For now, we'll analyze by day of week
-    const dayOfWeekCounts = [0, 0, 0, 0, 0, 0, 0]; // Sun-Sat
+    // Patients with exactly 1 visit
+    const oneVisitPatients = Object.values(patientAppointmentCounts)
+      .filter(count => count === 1).length;
+
+    // Patients without any appointments
+    const patientsWithoutAppointments = patients.length - patientsWithAppointments;
+
+    // New patients = patients with 0 or 1 visit
+    const newPatients = oneVisitPatients + patientsWithoutAppointments;
+
+    // Average visits per ACTIVE patient (those who have consulted at least once)
+    const avgVisitsPerPatient = patientsWithAppointments > 0 
+      ? (apps.length / patientsWithAppointments).toFixed(1) 
+      : 0;
+
+    // Retention rate = returning patients / patients who have consulted
+    const retentionRate = patientsWithAppointments > 0 
+      ? ((returningPatients / patientsWithAppointments) * 100).toFixed(1) 
+      : 0;
+
+    // ⏰ 4. Time Optimization
+    const dayOfWeekCounts = [0, 0, 0, 0, 0, 0, 0];
     apps.forEach(app => {
       const date = new Date(app.appointment_date);
       dayOfWeekCounts[date.getDay()]++;
@@ -263,6 +300,9 @@ const StatisticsDashboard = () => {
       reprogramme: statusCounts.reprogramme
     };
 
+    // Total lost includes all three categories
+    const totalLost = lostAppointments.ne_repond_pas + lostAppointments.absent + lostAppointments.reprogramme;
+
     // 📊 6. Growth Metrics
     const patientsThisMonth = patients.filter(p => p.createdAt && isThisMonth(p.createdAt)).length;
     const patientsLastMonth = patients.filter(p => {
@@ -275,7 +315,7 @@ const StatisticsDashboard = () => {
 
     const patientGrowth = patientsLastMonth > 0
       ? (((patientsThisMonth - patientsLastMonth) / patientsLastMonth) * 100).toFixed(1)
-      : 0;
+      : patientsThisMonth > 0 ? '100' : '0';
 
     // Growth chart data
     let chartData = [];
@@ -323,20 +363,21 @@ const StatisticsDashboard = () => {
       statusPercentages,
       statusDistribution,
 
-      // Patient Behavior
+      // Patient Behavior - CORRECTED
       returningPatients,
       newPatients,
+      patientsWithoutAppointments,
       avgVisitsPerPatient,
       retentionRate,
 
       // Time Optimization
-      bestDay: dayNames[bestDay],
-      worstDay: dayNames[worstDay],
+      bestDay: dayNames[bestDay] || 'N/A',
+      worstDay: dayNames[worstDay] || 'N/A',
       dayOfWeekCounts,
 
       // Lost Revenue
       lostAppointments,
-      totalLost: lostAppointments.ne_repond_pas + lostAppointments.absent,
+      totalLost,
 
       // Growth Metrics
       patientsThisMonth,
@@ -410,7 +451,7 @@ const StatisticsDashboard = () => {
         </div>
       </div>
 
-      {/* 📆 1. Appointment Analytics */}
+      {/* Appointment Analytics */}
       <div>
         <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
           📆 Analyse des Rendez-vous
@@ -505,7 +546,7 @@ const StatisticsDashboard = () => {
         </div>
       </div>
 
-      {/* 🧾 2. Status Analysis Details */}
+      {/* Status Analysis Details */}
       <div>
         <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
           🧾 Analyse des Statuts
@@ -542,7 +583,7 @@ const StatisticsDashboard = () => {
         </div>
       </div>
 
-      {/* 👥 3. Patient Behavior */}
+      {/* Patient Behavior */}
       <div>
         <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
           👥 Comportement des Patients
@@ -564,7 +605,7 @@ const StatisticsDashboard = () => {
             </div>
             <p className="text-4xl font-black text-gray-900 mb-2">{stats.avgVisitsPerPatient}</p>
             <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Visites Moyennes</p>
-            <p className="text-xs text-gray-400 mt-2">Par patient</p>
+            <p className="text-xs text-gray-400 mt-2">Par patient actif</p>
           </div>
 
           <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm">
@@ -582,12 +623,12 @@ const StatisticsDashboard = () => {
             </div>
             <p className="text-4xl font-black text-gray-900 mb-2">{stats.newPatients}</p>
             <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">Nouveaux Patients</p>
-            <p className="text-xs text-gray-400 mt-2">Première visite</p>
+            <p className="text-xs text-gray-400 mt-2">0 ou 1 visite</p>
           </div>
         </div>
       </div>
 
-      {/* ⏰ 4. Time Optimization */}
+      {/* Time Optimization */}
       <div>
         <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
           ⏰ Optimisation du Temps
@@ -642,47 +683,7 @@ const StatisticsDashboard = () => {
         </div>
       </div>
 
-      {/* 📉 5. Lost Revenue Indicators */}
-      <div>
-        <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
-          📉 Indicateurs de Revenus Perdus
-        </h2>
-        <div className="grid lg:grid-cols-3 gap-6">
-          <LostRevenueCard
-            title="Ne Répond Pas"
-            count={stats.lostAppointments.ne_repond_pas}
-            icon={PhoneOff}
-            color="amber"
-            description="Patients non joignables"
-          />
-          <LostRevenueCard
-            title="Absents"
-            count={stats.lostAppointments.absent}
-            icon={UserX}
-            color="red"
-            description="Rendez-vous manqués"
-          />
-          <LostRevenueCard
-            title="Reprogrammés"
-            count={stats.lostAppointments.reprogramme}
-            icon={CalendarX}
-            color="purple"
-            description="RDV reportés"
-          />
-        </div>
-        <div className="mt-6 bg-gradient-to-r from-red-50 to-amber-50 rounded-3xl border border-red-100 p-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-red-600 uppercase tracking-wider mb-2">Total Pertes Potentielles</p>
-              <p className="text-5xl font-black text-red-900">{stats.totalLost}</p>
-              <p className="text-sm text-red-600 mt-2">Rendez-vous perdus ou à risque</p>
-            </div>
-            <AlertCircle className="w-16 h-16 text-red-300" />
-          </div>
-        </div>
-      </div>
-
-      {/* 📊 6. Growth Metrics */}
+      {/* Growth Metrics */}
       <div>
         <h2 className="text-2xl font-black text-gray-900 mb-4 flex items-center gap-2">
           📊 Métriques de Croissance
@@ -713,7 +714,6 @@ const StatisticsDashboard = () => {
   );
 };
 
-// --- Components ---
 
 const AnalyticsCard = ({ title, value, icon: Icon, color }) => {
   const colorClasses = {
@@ -757,27 +757,6 @@ const StatusCard = ({ title, percentage, count, icon: Icon, color }) => {
         <div className={`h-full ${colors.bar} transition-all duration-1000`} style={{ width: `${percentage}%` }} />
       </div>
       <p className="text-xs text-gray-400 mt-2">{count} rendez-vous</p>
-    </div>
-  );
-};
-
-const LostRevenueCard = ({ title, count, icon: Icon, color, description }) => {
-  const colorClasses = {
-    amber: { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'text-amber-600' },
-    red: { bg: 'bg-red-50', border: 'border-red-200', icon: 'text-red-600' },
-    purple: { bg: 'bg-purple-50', border: 'border-purple-200', icon: 'text-purple-600' }
-  };
-
-  const colors = colorClasses[color];
-
-  return (
-    <div className={`${colors.bg} rounded-3xl border ${colors.border} p-8 shadow-sm`}>
-      <div className="flex items-center justify-between mb-4">
-        <Icon className={`w-8 h-8 ${colors.icon}`} />
-        <p className="text-4xl font-black text-gray-900">{count}</p>
-      </div>
-      <p className="text-sm font-bold text-gray-700 uppercase tracking-wider">{title}</p>
-      <p className="text-xs text-gray-500 mt-2">{description}</p>
     </div>
   );
 };

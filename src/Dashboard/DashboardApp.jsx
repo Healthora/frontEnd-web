@@ -183,24 +183,22 @@ const MedicalDashboard = () => {
               >
                 <Menu className="w-5 h-5 text-gray-600" />
               </button>
+              <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-200 rounded-2xl">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="text-sm font-bold text-gray-700">
+                  {new Date().toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                </span>
+              </div>
             </div>
+
 
             {/* Right: Actions */}
             <div className="flex items-center gap-4">
-              {/* Status Badge */}
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span className="text-xs font-semibold text-emerald-700">
-                  En Ligne
-                </span>
-              </div>
-
-              {/* Notifications */}
-              <button className="relative p-2.5 hover:bg-gray-100 rounded-xl transition-colors">
-                <Bell className="w-5 h-5 text-gray-600" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-              </button>
-
               {/* Profile Dropdown */}
               <div className="flex items-center gap-3 pl-3 pr-2 py-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer border border-gray-100">
                 <div className="hidden md:block text-right">

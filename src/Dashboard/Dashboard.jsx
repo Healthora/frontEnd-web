@@ -288,17 +288,6 @@ const Dashboard = () => {
             Vue d'ensemble de votre journée
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-200 rounded-2xl">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-          <span className="text-sm font-bold text-gray-700">
-            {new Date().toLocaleDateString('fr-FR', {
-              weekday: 'long',
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric'
-            })}
-          </span>
-        </div>
       </div>
 
       {/* 📊 KPIs Rapides */}
