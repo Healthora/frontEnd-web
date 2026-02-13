@@ -46,12 +46,14 @@ const PatientManagement = () => {
   };
 
   const StatCard = ({ label, value, icon: Icon, color }) => (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
-        <div className={`p-2 bg-${color}-100 rounded-xl`}><Icon className={`w-5 h-5 text-${color}-600`} /></div>
+    <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden">
+      <div className="flex items-center justify-between mb-6">
+        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-${color === 'sky' ? 'sky-50 text-sky-600' : color === 'indigo' ? 'indigo-50 text-indigo-600' : color === 'emerald' ? 'emerald-50 text-emerald-600' : 'orange-50 text-orange-600'} group-hover:scale-110 transition-transform`}>
+          <Icon className="w-8 h-8" />
+        </div>
       </div>
-      <p className="text-3xl font-black text-gray-900 mb-1">{value}</p>
-      <p className="text-sm text-slate-500 font-medium">{label}</p>
+      <p className="text-4xl font-black text-gray-900 tracking-tighter mb-1">{value}</p>
+      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</p>
     </div>
   );
 
@@ -60,10 +62,10 @@ const PatientManagement = () => {
       <div className="max-w-7xl mx-auto">
 
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 mb-1">Patients</h1>
-            <p className="text-slate-500 text-sm">Gérez votre base de patients.</p>
+            <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">Patients</h1>
+            <p className="text-gray-500 font-medium text-lg">Gérez votre base de patients.</p>
           </div>
           <div className="flex gap-3">
             <button onClick={() => setIsCreateModalOpen(true)} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-xl font-semibold shadow-md shadow-sky-200 hover:scale-[1.02] transition-all">

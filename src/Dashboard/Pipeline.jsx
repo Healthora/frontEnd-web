@@ -18,7 +18,7 @@ import Toast from '../components/Toast';
 const Pipeline = () => {
   const { doctor } = useDoctor();
   const [loading, setLoading] = useState(false);
-  const [appointments, setAppointments] = useState({}); 
+  const [appointments, setAppointments] = useState({});
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -244,13 +244,13 @@ const Pipeline = () => {
 
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-black text-gray-900 mb-2">
+              <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">
                 Pipeline de Rendez-vous
               </h1>
-              <p className="text-gray-500">
-                Gérez vos rendez-vous
+              <p className="text-gray-500 font-medium text-lg">
+                Suivi et gestion du flux patient
               </p>
             </div>
             <div className="flex items-center gap-3">

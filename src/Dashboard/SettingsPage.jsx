@@ -74,10 +74,10 @@ const SettingsPage = ({ onUserUpdate }) => {
       {/* --- STICKY TOP BAR --- */}
       <div className="sticky top-0 z-10 backdrop-blur-md border-b border-slate-100 mb-8">
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 mb-2">Paramètres</h1>
-            <p className="text-gray-500">Configuration générale du compte et du cabinet</p>
+            <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">Paramètres du Compte</h1>
+            <p className="text-gray-500 font-medium text-lg">Configuration générale du compte et du cabinet</p>
           </div>
         </div>
 

@@ -5,17 +5,18 @@ import {
   Stethoscope,
   BarChart3,
   User,
+  Activity
 } from "lucide-react";
 
 const Dashboard = () => {
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 mb-2">
+          <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">
             Tableau de Bord
           </h1>
-          <p className="text-gray-500">
+          <p className="text-gray-500 font-medium text-lg">
             Bienvenue sur votre tableau de bord médical
           </p>
         </div>
@@ -23,59 +24,59 @@ const Dashboard = () => {
       {/* Stats Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Card 1 */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-sky-100 to-sky-50 rounded-xl flex items-center justify-center">
-              <CalendarCheck className="w-6 h-6 text-sky-600" />
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-sky-100 to-sky-50 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+              <CalendarCheck className="w-8 h-8 text-sky-600" />
             </div>
-            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+            <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full uppercase tracking-widest">
               +12%
             </span>
           </div>
-          <h3 className="text-2xl font-black text-gray-900 mb-1">48</h3>
-          <p className="text-sm text-gray-500">RDV Aujourd'hui</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tighter mb-1">48</p>
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">RDV Aujourd'hui</h3>
         </div>
 
         {/* Card 2 */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-indigo-50 rounded-xl flex items-center justify-center">
-              <Users className="w-6 h-6 text-indigo-600" />
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-indigo-100 to-indigo-50 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+              <Users className="w-8 h-8 text-indigo-600" />
             </div>
-            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+            <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full uppercase tracking-widest">
               +8%
             </span>
           </div>
-          <h3 className="text-2xl font-black text-gray-900 mb-1">324</h3>
-          <p className="text-sm text-gray-500">Patients Actifs</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tighter mb-1">324</p>
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Patients Actifs</h3>
         </div>
 
         {/* Card 3 */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center">
-              <BarChart3 className="w-6 h-6 text-emerald-600" />
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+              <BarChart3 className="w-8 h-8 text-emerald-600" />
             </div>
-            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+            <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full uppercase tracking-widest">
               +24%
             </span>
           </div>
-          <h3 className="text-2xl font-black text-gray-900 mb-1">94%</h3>
-          <p className="text-sm text-gray-500">Taux de Présence</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tighter mb-1">94%</p>
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">TPS Présence</h3>
         </div>
 
         {/* Card 4 */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl flex items-center justify-center">
-              <Stethoscope className="w-6 h-6 text-purple-600" />
+        <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
+              <Stethoscope className="w-8 h-8 text-purple-600" />
             </div>
-            <span className="text-xs font-semibold text-sky-600 bg-sky-50 px-2 py-1 rounded-full">
+            <span className="text-[10px] font-black text-sky-600 bg-sky-50 px-3 py-1.5 rounded-full uppercase tracking-widest">
               Stable
             </span>
           </div>
-          <h3 className="text-2xl font-black text-gray-900 mb-1">12</h3>
-          <p className="text-sm text-gray-500">Médecins Actifs</p>
+          <p className="text-4xl font-black text-gray-900 tracking-tighter mb-1">12</p>
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Médecins Actifs</h3>
         </div>
       </div>
 

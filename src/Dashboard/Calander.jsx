@@ -245,10 +245,10 @@ const Calendar = () => {
       <div className="max-w-[1400px] mx-auto ">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-black text-gray-900 mb-2">Calendrier</h1>
-              <p className="text-gray-500">Gérez vos rendez-vous et votre planning</p>
+              <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">Calendrier Médical</h1>
+              <p className="text-gray-500 font-medium text-lg">Gérez vos rendez-vous et votre planning</p>
             </div>
             <button
               onClick={() => setIsNewAppointmentModalOpen(true)}
