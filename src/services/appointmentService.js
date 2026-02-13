@@ -4,6 +4,7 @@ import { authenticatedFetch } from '../utils/auth';
 const API_URL = 'http://127.0.0.1:3000';
 
 export const appointmentService = {
+    
     create: async (appointmentData) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/appointments`, {
@@ -71,6 +72,7 @@ export const appointmentService = {
             throw error;
         }
     },
+
     delete: async (id) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/appointments/${id}`, {

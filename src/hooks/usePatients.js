@@ -60,8 +60,8 @@ export const usePatients = (doctorId) => {
   const stats = useMemo(() => {
     return {
       total: patients.length,
-      upcoming: patients.reduce((sum, p) => sum + (p.totalPast || 0), 0), // "a venit" -> before today
-      past: patients.reduce((sum, p) => sum + (p.totalFuture || 0), 0),   // "visit pass" -> after today
+      upcoming: patients.reduce((sum, p) => sum + (p.totalPast || 0), 0), 
+      past: patients.reduce((sum, p) => sum + (p.totalFuture || 0), 0),   
       nrp: patients.reduce((sum, p) => sum + (p.nrpCount || 0), 0),
     };
   }, [patients]);

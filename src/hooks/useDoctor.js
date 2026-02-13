@@ -63,7 +63,7 @@ export const useDoctor = (onUserUpdate) => {
             }
         };
         fetchProfile();
-    }, []); // Run on mount
+    }, []); 
 
     const updateProfile = useCallback(async (doctorData) => {
         setIsLoading(true);

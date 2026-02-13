@@ -340,7 +340,6 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                         onClose={() => setIsClientModalOpen(false)}
                         onSuccess={() => {
                             setIsClientModalOpen(false);
-                            // Refresh patients list
                             filters.setSearchTerm(''); // Trigger refresh effectively
                         }}
                     />

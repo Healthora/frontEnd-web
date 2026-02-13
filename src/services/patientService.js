@@ -3,7 +3,6 @@ import { authenticatedFetch } from '../utils/auth';
 
 const API_URL = 'http://127.0.0.1:3000/patient';
 
-// Helper to map backend database fields to frontend clean object
 const mapPatientDTO = (p) => ({
     id: p.id,
     name: `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Inconnu',
@@ -24,7 +23,7 @@ const mapPatientDTO = (p) => ({
 });
 
 export const patientService = {
-    // Get all patients for a doctor
+    
     getAll: async (doctorId) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/${doctorId}`, { method: 'GET' });
@@ -36,7 +35,6 @@ export const patientService = {
         }
     },
 
-    // Update a specific patient
     update: async (id, patientData) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/${id}`, {
@@ -51,7 +49,6 @@ export const patientService = {
         }
     },
 
-    // Delete a patient
     delete: async (id) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/${id}`, { method: 'DELETE' });
@@ -63,7 +60,6 @@ export const patientService = {
         }
     },
 
-    // Add a new patient
     add: async (patientData) => {
         try {
             const res = await authenticatedFetch(`${API_URL}/add`, {
