@@ -27,7 +27,6 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
     const [error, setError] = useState(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-    // Initialize form when appointment prop changes
     useEffect(() => {
         if (appointment && isOpen) {
             const cleanDate = appointment.appointment_date ? appointment.appointment_date.split('T')[0] : '';
@@ -59,14 +58,13 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
         }
     }, [appointment, isOpen, defaultStatus]);
 
-    // Filter patients for search
     const filteredPatients = patients.filter(p =>
         (p.name && p.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (p.phone && p.phone.includes(searchTerm))
     );
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setError(null);
 
         if (!selectedPatient) {
@@ -75,7 +73,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
         }
 
         if (!doctor.cabinetId) {
-            setError('Aucun cabinet associé trouvé. Veuillez configurer votre cabinet dans les paramètres.');
+            setError('Aucun cabinet associé trouvé.');
             return;
         }
 
@@ -101,19 +99,10 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                 });
             }
 
-            if (onSuccess) onSuccess(appointment ? 'Rendez-vous modifié avec succès' : 'Rendez-vous créé avec succès');
+            if (onSuccess) onSuccess(appointment ? 'Rendez-vous modifié' : 'Rendez-vous créé');
             onClose();
-            setFormData({
-                patientId: '',
-                date: '',
-                type: 'consultation',
-                status: 'nouveau',
-                notes: ''
-            });
-            setSelectedPatient(null);
-            setSearchTerm('');
         } catch (err) {
-            setError(err.message || `Erreur lors de la ${appointment ? 'modification' : 'création'} du rendez-vous`);
+            setError(err.message || `Erreur lors de l'enregistrement`);
         } finally {
             setIsLoading(false);
         }
@@ -128,7 +117,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
         setIsLoading(true);
         try {
             await appointmentService.delete(appointment.id);
-            if (onSuccess) onSuccess('Rendez-vous supprimé avec succès');
+            if (onSuccess) onSuccess('Rendez-vous supprimé');
             setShowDeleteConfirm(false);
             onClose();
         } catch (err) {
@@ -143,20 +132,21 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
 
     return (
         <>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-white w-full max-w-2xl rounded-[28px] sm:rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col">
+                    
                     {/* Header */}
-                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-sky-50 to-indigo-50 flex-shrink-0">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-linear-to-r from-sky-50 to-indigo-50 shrink-0">
                         <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white shadow-md">
+                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white shadow-md shrink-0">
                                 <Calendar className="w-5 h-5" />
                             </div>
-                            <div>
-                                <span className="block text-lg leading-tight">
-                                    {appointment ? 'Modifier Rendez-vous' : 'Nouveau Rendez-vous'}
+                            <div className="min-w-0">
+                                <span className="block text-base sm:text-lg leading-tight truncate">
+                                    {appointment ? 'Modifier RDV' : 'Nouveau RDV'}
                                 </span>
                                 {selectedPatient && (
-                                    <span className="text-xs font-medium text-slate-500">{selectedPatient.name}</span>
+                                    <span className="text-xs font-medium text-slate-500 block truncate">{selectedPatient.name}</span>
                                 )}
                             </div>
                         </h2>
@@ -169,11 +159,11 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                     </div>
 
                     {/* Body - Scrollable */}
-                    <div className="flex-1 overflow-y-auto p-6">
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
                         {error && (
                             <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm animate-in slide-in-from-top-2">
                                 <AlertCircle className="w-4 h-4 shrink-0" />
-                                {error}
+                                <span className="flex-1">{error}</span>
                             </div>
                         )}
 
@@ -190,7 +180,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                             <input
                                                 type="text"
-                                                placeholder="Rechercher un patient..."
+                                                placeholder="Rechercher..."
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
                                                 className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
@@ -198,7 +188,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                         </div>
 
                                         {searchTerm && (
-                                            <div className="max-h-48 overflow-y-auto border-2 border-slate-100 rounded-2xl bg-white shadow-sm">
+                                            <div className="max-h-48 overflow-y-auto border-2 border-slate-100 rounded-2xl bg-white shadow-lg animate-in fade-in slide-in-from-top-1">
                                                 {filteredPatients.length > 0 ? (
                                                     filteredPatients.map(patient => (
                                                         <button
@@ -211,15 +201,15 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                                             className="w-full text-left px-4 py-3 hover:bg-sky-50 transition-colors flex items-center justify-between group border-b border-slate-50 last:border-0"
                                                         >
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                                                                <div className="w-8 h-8 rounded-full bg-linear-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
                                                                     {patient.initials}
                                                                 </div>
-                                                                <div>
-                                                                    <p className="font-bold text-slate-900 text-sm">{patient.name}</p>
-                                                                    <p className="text-xs text-slate-500">{patient.phone}</p>
+                                                                <div className="min-w-0">
+                                                                    <p className="font-bold text-slate-900 text-sm truncate">{patient.name}</p>
+                                                                    <p className="text-xs text-slate-500 truncate">{patient.phone}</p>
                                                                 </div>
                                                             </div>
-                                                            <Check className="w-4 h-4 text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                            <Check className="w-4 h-4 text-sky-500 opacity-0 group-hover:opacity-100 shrink-0" />
                                                         </button>
                                                     ))
                                                 ) : (
@@ -229,10 +219,10 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                                         <button
                                                             type="button"
                                                             onClick={() => setIsClientModalOpen(true)}
-                                                            className="text-sm font-bold text-sky-600 hover:text-sky-700 flex items-center gap-2 mx-auto"
+                                                            className="text-sm font-bold text-sky-600 hover:text-sky-700 flex items-center gap-2 mx-auto active:scale-95 transition-transform"
                                                         >
                                                             <UserPlus className="w-4 h-4" />
-                                                            Créer un nouveau patient
+                                                            Créer un nouveau
                                                         </button>
                                                     </div>
                                                 )}
@@ -240,20 +230,20 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-sky-50 to-indigo-50 border-2 border-sky-100 rounded-2xl">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold shadow">
+                                    <div className="flex items-center justify-between p-3 sm:p-4 bg-linear-to-r from-sky-50 to-indigo-50 border-2 border-sky-100 rounded-2xl">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="w-10 h-10 rounded-full bg-linear-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold shadow-sm shrink-0">
                                                 {selectedPatient.initials}
                                             </div>
-                                            <div>
-                                                <p className="font-bold text-slate-900">{selectedPatient.name}</p>
-                                                <p className="text-xs text-slate-500">{selectedPatient.phone}</p>
+                                            <div className="min-w-0">
+                                                <p className="font-bold text-slate-900 truncate text-sm sm:text-base">{selectedPatient.name}</p>
+                                                <p className="text-xs text-slate-500 truncate">{selectedPatient.phone}</p>
                                             </div>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => setSelectedPatient(null)}
-                                            className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                            className="ml-2 px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors shrink-0"
                                         >
                                             Changer
                                         </button>
@@ -261,7 +251,7 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                 )}
                             </div>
 
-                            {/* Date */}
+                            {/* Date Field */}
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
                                     Date du rendez-vous *
@@ -278,8 +268,8 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                                 </div>
                             </div>
 
-                            {/* Type & Status */}
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* Responsive Grid for Type & Status */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
                                         Type de visite
@@ -337,49 +327,52 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                         </form>
                     </div>
 
-                    {/* Footer - Fixed */}
-                    <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex gap-3 flex-shrink-0">
+                    {/* Footer - Stacked on Mobile */}
+                    <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-col-reverse sm:flex-row gap-3 shrink-0">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-5 py-3 border-2 border-slate-200 text-slate-600 rounded-2xl font-bold text-sm hover:bg-white transition-all active:scale-95"
+                            className="w-full sm:flex-1 px-5 py-3 border-2 border-slate-200 text-slate-600 rounded-2xl font-bold text-sm hover:bg-white transition-all active:scale-95"
                             disabled={isLoading}
                         >
                             Annuler
                         </button>
-                        {appointment && (
-                            <button
-                                type="button"
-                                onClick={handleDeleteClick}
-                                disabled={isLoading}
-                                className="px-6 py-3 bg-red-50 text-red-600 border-2 border-red-200 font-bold rounded-2xl hover:bg-red-100 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        )}
-                        <button
-                            type="submit"
-                            onClick={handleSubmit}
-                            disabled={isLoading}
-                            className="flex-1 px-8 py-3 bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-2xl font-bold text-sm shadow-lg shadow-sky-200 hover:shadow-xl hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    {appointment ? 'Modification...' : 'Création...'}
-                                </>
-                            ) : (
-                                <>
-                                    <Check className="w-4 h-4" />
-                                    {appointment ? 'Modifier' : 'Créer le rendez-vous'}
-                                </>
+                        
+                        <div className="flex gap-2 sm:flex-1 w-full">
+                            {appointment && (
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteClick}
+                                    disabled={isLoading}
+                                    className="px-5 py-3 bg-red-50 text-red-600 border-2 border-red-200 font-bold rounded-2xl hover:bg-red-100 transition-all active:scale-95 disabled:opacity-50"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                </button>
                             )}
-                        </button>
+                            <button
+                                type="submit"
+                                onClick={handleSubmit}
+                                disabled={isLoading}
+                                className="flex-1 px-6 py-3 bg-linear-to-r from-sky-600 to-indigo-600 text-white rounded-2xl font-bold text-sm shadow-lg shadow-sky-200 hover:shadow-xl hover:scale-[1.01] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>Patientez...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check className="w-4 h-4" />
+                                        <span>{appointment ? 'Enregistrer' : 'Confirmer'}</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Patient Creation Modal */}
+            {/* Nested Modals */}
             {isClientModalOpen && (
                 <CreatePatientModal
                     isOpen={isClientModalOpen}
@@ -391,12 +384,11 @@ const NewAppointmentModal = ({ isOpen, onClose, onSuccess, appointment, defaultS
                 />
             )}
 
-            {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
                 <DeleteConfirmModal
                     itemName="ce rendez-vous"
-                    title="Supprimer le rendez-vous ?"
-                    message="Vous êtes sur le point de supprimer"
+                    title="Supprimer ?"
+                    message="Voulez-vous supprimer ce rendez-vous ?"
                     warning="Cette action est irréversible."
                     onClose={() => setShowDeleteConfirm(false)}
                     onConfirm={handleConfirmDelete}
