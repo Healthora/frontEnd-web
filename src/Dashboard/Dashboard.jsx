@@ -9,7 +9,6 @@ import { useDoctor } from '../hooks/useDoctor';
 import { appointmentService } from '../services/appointmentService';
 import { patientService } from '../services/patientService';
 
-// --- Helpers ---
 const isToday = (dateStr) => {
   if (!dateStr) return false;
   const date = new Date(dateStr);
@@ -35,6 +34,155 @@ const isPast = (dateStr) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return date < today;
+};
+
+
+
+// --- Components ---
+
+const QuickKPI = ({ title, value, icon: Icon, color, subtitle }) => {
+  const colorClasses = {
+    sky: 'bg-sky-100 text-sky-600',
+    emerald: 'bg-emerald-100 text-emerald-600',
+    indigo: 'bg-indigo-100 text-indigo-600'
+  };
+
+  return (
+    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm hover:shadow-lg transition-all duration-300">
+      <div className="flex items-center justify-between mb-4">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colorClasses[color]}`}>
+          <Icon className="w-6 h-6" />
+        </div>
+      </div>
+      <p className="text-3xl font-black text-gray-900 mb-1">{value}</p>
+      <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{title}</h3>
+      <p className="text-[10px] font-bold text-gray-300 mt-1 italic">{subtitle}</p>
+    </div>
+  );
+};
+
+const AppointmentQuickView = ({ title, count, color, icon: Icon, alert }) => {
+  const colorClasses = {
+    sky: 'bg-sky-50 border-sky-200 text-sky-900',
+    indigo: 'bg-indigo-50 border-indigo-200 text-indigo-900',
+    red: 'bg-red-50 border-red-200 text-red-900',
+    amber: 'bg-amber-50 border-amber-200 text-amber-900'
+  };
+
+  const iconColors = {
+    sky: 'text-sky-400',
+    indigo: 'text-indigo-400',
+    red: 'text-red-400',
+    amber: 'text-amber-400'
+  };
+
+  return (
+    <div className={`p-5 rounded-2xl border-2 ${colorClasses[color]} flex items-center justify-between group hover:scale-[1.02] transition-transform`}>
+      <div className="flex items-center gap-4">
+        <Icon className={`w-6 h-6 ${iconColors[color]}`} />
+        <div>
+          <p className="text-sm font-bold opacity-70 uppercase tracking-wider">{title}</p>
+          <p className="text-2xl font-black mt-1">{count}</p>
+        </div>
+      </div>
+      {alert && count > 0 && (
+        <AlertCircle className="w-5 h-5 text-red-500 animate-pulse" />
+      )}
+    </div>
+  );
+};
+
+const StatusBar = ({ label, count, total, color }) => {
+  const percentage = total > 0 ? (count / total) * 100 : 0;
+
+  const colorClasses = {
+    sky: 'bg-sky-500',
+    emerald: 'bg-emerald-500',
+    amber: 'bg-amber-500',
+    purple: 'bg-purple-500',
+    red: 'bg-red-500',
+    indigo: 'bg-indigo-500',
+    gray: 'bg-gray-500'
+  };
+
+  return (
+    <div>
+      <div className="flex justify-between text-sm font-bold text-gray-700 mb-2">
+        <span>{label}</span>
+        <span>{count} / {total}</span>
+      </div>
+      <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+        <div
+          className={`h-full ${colorClasses[color]} transition-all duration-1000`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+};
+
+const AlertCard = ({ title, count, icon: Icon, color, description }) => {
+  const colorClasses = {
+    amber: 'bg-amber-50 border-amber-200',
+    sky: 'bg-sky-50 border-sky-200',
+    indigo: 'bg-indigo-50 border-indigo-200'
+  };
+
+  const iconColors = {
+    amber: 'text-amber-600',
+    sky: 'text-sky-600',
+    indigo: 'text-indigo-600'
+  };
+
+  return (
+    <div className={`p-5 rounded-2xl border ${colorClasses[color]} flex items-center gap-4`}>
+      <div className={`p-3 bg-white rounded-xl ${iconColors[color]}`}>
+        <Icon className="w-5 h-5" />
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-bold text-gray-600">{title}</p>
+        <p className="text-xs text-gray-500">{description}</p>
+      </div>
+      <div className="text-2xl font-black text-gray-900">{count}</div>
+    </div>
+  );
+};
+
+const AppointmentCard = ({ appointment, patients }) => {
+  const patient = patients.find(p => p.id === appointment.patient_id);
+
+  const statusConfig = {
+    'nouveau': { label: 'Nouveau', color: 'bg-blue-100 text-blue-700' },
+    'confirme': { label: 'Confirmé', color: 'bg-emerald-100 text-emerald-700' },
+    'ne_repond_pas': { label: 'Ne répond pas', color: 'bg-amber-100 text-amber-700' },
+    'reprogramme': { label: 'Reprogrammé', color: 'bg-purple-100 text-purple-700' },
+    'absent': { label: 'Absent', color: 'bg-red-100 text-red-700' },
+    'suivi': { label: 'Suivi', color: 'bg-indigo-100 text-indigo-700' },
+    'termine': { label: 'Terminé', color: 'bg-gray-100 text-gray-700' }
+  };
+
+  const status = statusConfig[appointment.status] || statusConfig['nouveau'];
+
+  return (
+    <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 hover:border-sky-200 transition-all flex items-center justify-between group">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold">
+          {patient?.firstName?.[0]}{patient?.lastName?.[0]}
+        </div>
+        <div>
+          <p className="text-lg font-bold text-gray-900">
+            {patient?.firstName} {patient?.lastName}
+          </p>
+          <p className="text-xs text-gray-500">{patient?.phone}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${status.color}`}>
+          {status.label}
+        </span>
+      </div>
+    </div>
+  );
 };
 
 const Dashboard = () => {
@@ -285,7 +433,7 @@ const Dashboard = () => {
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold">
-                    {stats.latestPatient.first_name?.[0]}{stats.latestPatient.last_name?.[0]}
+                    {stats.latestPatient.firstName?.[0]}{stats.latestPatient.lastName?.[0]}
                   </div>
                   <div>
                     <p className="text-lg font-bold text-gray-900">
@@ -348,152 +496,4 @@ const Dashboard = () => {
     </div>
   );
 };
-
-// --- Components ---
-
-const QuickKPI = ({ title, value, icon: Icon, color, subtitle }) => {
-  const colorClasses = {
-    sky: 'bg-sky-100 text-sky-600',
-    emerald: 'bg-emerald-100 text-emerald-600',
-    indigo: 'bg-indigo-100 text-indigo-600'
-  };
-
-  return (
-    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm hover:shadow-lg transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colorClasses[color]}`}>
-          <Icon className="w-6 h-6" />
-        </div>
-      </div>
-      <p className="text-3xl font-black text-gray-900 mb-1">{value}</p>
-      <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">{title}</h3>
-      <p className="text-[10px] font-bold text-gray-300 mt-1 italic">{subtitle}</p>
-    </div>
-  );
-};
-
-const AppointmentQuickView = ({ title, count, color, icon: Icon, alert }) => {
-  const colorClasses = {
-    sky: 'bg-sky-50 border-sky-200 text-sky-900',
-    indigo: 'bg-indigo-50 border-indigo-200 text-indigo-900',
-    red: 'bg-red-50 border-red-200 text-red-900',
-    amber: 'bg-amber-50 border-amber-200 text-amber-900'
-  };
-
-  const iconColors = {
-    sky: 'text-sky-400',
-    indigo: 'text-indigo-400',
-    red: 'text-red-400',
-    amber: 'text-amber-400'
-  };
-
-  return (
-    <div className={`p-5 rounded-2xl border-2 ${colorClasses[color]} flex items-center justify-between group hover:scale-[1.02] transition-transform`}>
-      <div className="flex items-center gap-4">
-        <Icon className={`w-6 h-6 ${iconColors[color]}`} />
-        <div>
-          <p className="text-sm font-bold opacity-70 uppercase tracking-wider">{title}</p>
-          <p className="text-2xl font-black mt-1">{count}</p>
-        </div>
-      </div>
-      {alert && count > 0 && (
-        <AlertCircle className="w-5 h-5 text-red-500 animate-pulse" />
-      )}
-    </div>
-  );
-};
-
-const StatusBar = ({ label, count, total, color }) => {
-  const percentage = total > 0 ? (count / total) * 100 : 0;
-
-  const colorClasses = {
-    sky: 'bg-sky-500',
-    emerald: 'bg-emerald-500',
-    amber: 'bg-amber-500',
-    purple: 'bg-purple-500',
-    red: 'bg-red-500',
-    indigo: 'bg-indigo-500',
-    gray: 'bg-gray-500'
-  };
-
-  return (
-    <div>
-      <div className="flex justify-between text-sm font-bold text-gray-700 mb-2">
-        <span>{label}</span>
-        <span>{count} / {total}</span>
-      </div>
-      <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className={`h-full ${colorClasses[color]} transition-all duration-1000`}
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
-    </div>
-  );
-};
-
-const AlertCard = ({ title, count, icon: Icon, color, description }) => {
-  const colorClasses = {
-    amber: 'bg-amber-50 border-amber-200',
-    sky: 'bg-sky-50 border-sky-200',
-    indigo: 'bg-indigo-50 border-indigo-200'
-  };
-
-  const iconColors = {
-    amber: 'text-amber-600',
-    sky: 'text-sky-600',
-    indigo: 'text-indigo-600'
-  };
-
-  return (
-    <div className={`p-5 rounded-2xl border ${colorClasses[color]} flex items-center gap-4`}>
-      <div className={`p-3 bg-white rounded-xl ${iconColors[color]}`}>
-        <Icon className="w-5 h-5" />
-      </div>
-      <div className="flex-1">
-        <p className="text-sm font-bold text-gray-600">{title}</p>
-        <p className="text-xs text-gray-500">{description}</p>
-      </div>
-      <div className="text-2xl font-black text-gray-900">{count}</div>
-    </div>
-  );
-};
-
-const AppointmentCard = ({ appointment, patients }) => {
-  const patient = patients.find(p => p.id === appointment.patient_id);
-
-  const statusConfig = {
-    'nouveau': { label: 'Nouveau', color: 'bg-blue-100 text-blue-700' },
-    'confirme': { label: 'Confirmé', color: 'bg-emerald-100 text-emerald-700' },
-    'ne_repond_pas': { label: 'Ne répond pas', color: 'bg-amber-100 text-amber-700' },
-    'reprogramme': { label: 'Reprogrammé', color: 'bg-purple-100 text-purple-700' },
-    'absent': { label: 'Absent', color: 'bg-red-100 text-red-700' },
-    'suivi': { label: 'Suivi', color: 'bg-indigo-100 text-indigo-700' },
-    'termine': { label: 'Terminé', color: 'bg-gray-100 text-gray-700' }
-  };
-
-  const status = statusConfig[appointment.status] || statusConfig['nouveau'];
-
-  return (
-    <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 hover:border-sky-200 transition-all flex items-center justify-between group">
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-white font-bold">
-          {patient?.first_name?.[0]}{patient?.last_name?.[0]}
-        </div>
-        <div>
-          <p className="text-lg font-bold text-gray-900">
-            {patient?.first_name} {patient?.last_name}
-          </p>
-          <p className="text-xs text-gray-500">{patient?.phone}</p>
-        </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${status.color}`}>
-          {status.label}
-        </span>
-      </div>
-    </div>
-  );
-};
-
 export default Dashboard;
