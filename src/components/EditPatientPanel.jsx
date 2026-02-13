@@ -168,35 +168,6 @@ const EditPatientPanel = ({ patient, onClose, onSave }) => {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
-                            Statut
-                        </label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {[
-                                { value: 'active', label: 'Actif', color: 'emerald' },
-                                { value: 'pending', label: 'Attente', color: 'sky' },
-                                { value: 'inactive', label: 'Inactif', color: 'slate' },
-                            ].map(s => (
-                                <button
-                                    key={s.value}
-                                    type="button"
-                                    onClick={() => setForm({ ...form, status: s.value })}
-                                    className={`py-2.5 rounded-xl text-xs font-bold border-2 transition-all active:scale-95 ${form.status === s.value
-                                        ? s.color === 'emerald'
-                                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-100'
-                                            : s.color === 'sky'
-                                                ? 'bg-sky-500 text-white border-sky-500 shadow-md shadow-sky-100'
-                                                : 'bg-slate-600 text-white border-slate-600 shadow-md shadow-slate-100'
-                                        : 'bg-white text-slate-600 border-slate-100 hover:border-slate-200'
-                                        }`}
-                                >
-                                    {s.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Footer Actions */}
                     <div className="flex gap-3 pt-4">
                         <button

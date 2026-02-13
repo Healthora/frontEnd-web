@@ -183,15 +183,6 @@ const MedicalDashboard = () => {
               >
                 <Menu className="w-5 h-5 text-gray-600" />
               </button>
-
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Rechercher un patient, rendez-vous..."
-                  className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                />
-              </div>
             </div>
 
             {/* Right: Actions */}
