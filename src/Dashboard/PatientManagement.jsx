@@ -182,7 +182,7 @@ const PatientManagement = () => {
                       <td className="px-6 py-5 text-sm font-medium text-slate-600">{patient.lastVisit || '—'}</td>
                       <td className="px-6 py-5 text-sm text-indigo-600 font-black">{patient.nextVisit || 'Non planifié'}</td>
                       <td className="px-6 py-5">
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-2">
                           <button onClick={() => setEditingPatient(patient)} className="p-2 text-sky-600 bg-sky-50 hover:bg-sky-100 rounded-xl transition-colors"><Edit className="w-4 h-4" /></button>
                           <button onClick={() => setDeletingPatient(patient)} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors"><Trash2 className="w-4 h-4" /></button>
                         </div>
