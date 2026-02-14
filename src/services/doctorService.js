@@ -1,6 +1,6 @@
 import { authenticatedFetch } from '../utils/auth';
 
-const API_URL = 'http://127.0.0.1:3000';
+const API_URL = 'http://backend-production-a5ce3.up.railway.app';
 
 export const doctorService = {
 
