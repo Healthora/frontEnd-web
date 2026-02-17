@@ -1,7 +1,8 @@
+/* eslint-disable no-useless-catch */
 // services/patientService.js
 import { authenticatedFetch } from '../utils/auth';
 
-const API_URL = 'http://backend-production-a5ce3.up.railway.app';
+const API_URL = 'https://backend-production-a5ce3.up.railway.app';
 
 const mapPatientDTO = (p) => ({
     id: p.id,

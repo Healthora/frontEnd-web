@@ -15,7 +15,6 @@ function App() {
       <ProblemSection />
       <SolutionsSectionMedical />
       <Howitworkssection />
-      {/* <SecuritySectionMedical /> */}
       <FinalCTASectionMedical />
       <Footer />
       <Header />
